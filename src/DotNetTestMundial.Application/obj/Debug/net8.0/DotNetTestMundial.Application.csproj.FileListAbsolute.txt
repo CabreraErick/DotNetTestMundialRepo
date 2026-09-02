@@ -1,0 +1,16 @@
+C:\Users\Erick\source\GitHub\DotNetTestMundialRepo\src\DotNetTestMundial.Application\bin\Debug\net8.0\DotNetTestMundial.Application.deps.json
+C:\Users\Erick\source\GitHub\DotNetTestMundialRepo\src\DotNetTestMundial.Application\bin\Debug\net8.0\DotNetTestMundial.Application.dll
+C:\Users\Erick\source\GitHub\DotNetTestMundialRepo\src\DotNetTestMundial.Application\bin\Debug\net8.0\DotNetTestMundial.Application.pdb
+C:\Users\Erick\source\GitHub\DotNetTestMundialRepo\src\DotNetTestMundial.Application\bin\Debug\net8.0\DotNetTestMundial.Domain.dll
+C:\Users\Erick\source\GitHub\DotNetTestMundialRepo\src\DotNetTestMundial.Application\bin\Debug\net8.0\DotNetTestMundial.Domain.pdb
+C:\Users\Erick\source\GitHub\DotNetTestMundialRepo\src\DotNetTestMundial.Application\obj\Debug\net8.0\DotNetTestMundial.Application.csproj.AssemblyReference.cache
+C:\Users\Erick\source\GitHub\DotNetTestMundialRepo\src\DotNetTestMundial.Application\obj\Debug\net8.0\DotNetTestMundial.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Erick\source\GitHub\DotNetTestMundialRepo\src\DotNetTestMundial.Application\obj\Debug\net8.0\DotNetTestMundial.Application.AssemblyInfoInputs.cache
+C:\Users\Erick\source\GitHub\DotNetTestMundialRepo\src\DotNetTestMundial.Application\obj\Debug\net8.0\DotNetTestMundial.Application.AssemblyInfo.cs
+C:\Users\Erick\source\GitHub\DotNetTestMundialRepo\src\DotNetTestMundial.Application\obj\Debug\net8.0\DotNetTestMundial.Application.csproj.CoreCompileInputs.cache
+C:\Users\Erick\source\GitHub\DotNetTestMundialRepo\src\DotNetTestMundial.Application\obj\Debug\net8.0\DotNetTestMundial.Application.sourcelink.json
+C:\Users\Erick\source\GitHub\DotNetTestMundialRepo\src\DotNetTestMundial.Application\obj\Debug\net8.0\DotNetTe.0C7472B5.Up2Date
+C:\Users\Erick\source\GitHub\DotNetTestMundialRepo\src\DotNetTestMundial.Application\obj\Debug\net8.0\DotNetTestMundial.Application.dll
+C:\Users\Erick\source\GitHub\DotNetTestMundialRepo\src\DotNetTestMundial.Application\obj\Debug\net8.0\refint\DotNetTestMundial.Application.dll
+C:\Users\Erick\source\GitHub\DotNetTestMundialRepo\src\DotNetTestMundial.Application\obj\Debug\net8.0\DotNetTestMundial.Application.pdb
+C:\Users\Erick\source\GitHub\DotNetTestMundialRepo\src\DotNetTestMundial.Application\obj\Debug\net8.0\ref\DotNetTestMundial.Application.dll

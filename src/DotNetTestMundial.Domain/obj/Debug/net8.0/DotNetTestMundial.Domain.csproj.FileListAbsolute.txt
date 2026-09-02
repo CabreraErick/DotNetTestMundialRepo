@@ -1,0 +1,12 @@
+C:\Users\Erick\source\GitHub\DotNetTestMundialRepo\src\DotNetTestMundial.Domain\bin\Debug\net8.0\DotNetTestMundial.Domain.deps.json
+C:\Users\Erick\source\GitHub\DotNetTestMundialRepo\src\DotNetTestMundial.Domain\bin\Debug\net8.0\DotNetTestMundial.Domain.dll
+C:\Users\Erick\source\GitHub\DotNetTestMundialRepo\src\DotNetTestMundial.Domain\bin\Debug\net8.0\DotNetTestMundial.Domain.pdb
+C:\Users\Erick\source\GitHub\DotNetTestMundialRepo\src\DotNetTestMundial.Domain\obj\Debug\net8.0\DotNetTestMundial.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Erick\source\GitHub\DotNetTestMundialRepo\src\DotNetTestMundial.Domain\obj\Debug\net8.0\DotNetTestMundial.Domain.AssemblyInfoInputs.cache
+C:\Users\Erick\source\GitHub\DotNetTestMundialRepo\src\DotNetTestMundial.Domain\obj\Debug\net8.0\DotNetTestMundial.Domain.AssemblyInfo.cs
+C:\Users\Erick\source\GitHub\DotNetTestMundialRepo\src\DotNetTestMundial.Domain\obj\Debug\net8.0\DotNetTestMundial.Domain.csproj.CoreCompileInputs.cache
+C:\Users\Erick\source\GitHub\DotNetTestMundialRepo\src\DotNetTestMundial.Domain\obj\Debug\net8.0\DotNetTestMundial.Domain.sourcelink.json
+C:\Users\Erick\source\GitHub\DotNetTestMundialRepo\src\DotNetTestMundial.Domain\obj\Debug\net8.0\DotNetTestMundial.Domain.dll
+C:\Users\Erick\source\GitHub\DotNetTestMundialRepo\src\DotNetTestMundial.Domain\obj\Debug\net8.0\refint\DotNetTestMundial.Domain.dll
+C:\Users\Erick\source\GitHub\DotNetTestMundialRepo\src\DotNetTestMundial.Domain\obj\Debug\net8.0\DotNetTestMundial.Domain.pdb
+C:\Users\Erick\source\GitHub\DotNetTestMundialRepo\src\DotNetTestMundial.Domain\obj\Debug\net8.0\ref\DotNetTestMundial.Domain.dll

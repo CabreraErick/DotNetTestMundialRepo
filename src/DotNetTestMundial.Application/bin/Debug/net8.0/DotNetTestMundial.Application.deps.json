@@ -1,0 +1,39 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "DotNetTestMundial.Application/1.0.0": {
+        "dependencies": {
+          "DotNetTestMundial.Domain": "1.0.0"
+        },
+        "runtime": {
+          "DotNetTestMundial.Application.dll": {}
+        }
+      },
+      "DotNetTestMundial.Domain/1.0.0": {
+        "runtime": {
+          "DotNetTestMundial.Domain.dll": {
+            "assemblyVersion": "1.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "DotNetTestMundial.Application/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "DotNetTestMundial.Domain/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

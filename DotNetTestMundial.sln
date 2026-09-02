@@ -3,6 +3,22 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{160866B1-3E4F-46D3-9967-F316BE5EF009}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetTestMundial.Domain", "src\DotNetTestMundial.Domain\DotNetTestMundial.Domain.csproj", "{9D2B2897-E2D9-46E6-B398-6AEC250FEAD6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetTestMundial.Application", "src\DotNetTestMundial.Application\DotNetTestMundial.Application.csproj", "{F02D8BCB-E463-4731-9A0E-9ED889CCEE8A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetTestMundial.Infrastructure", "src\DotNetTestMundial.Infrastructure\DotNetTestMundial.Infrastructure.csproj", "{5AE42908-896A-4A15-A560-542D64E41BF4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetTestMundial.Api", "src\DotNetTestMundial.Api\DotNetTestMundial.Api.csproj", "{CA966813-0095-470D-AAAD-83388ED413FE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{C1B6B96D-3266-402D-91EF-D548EA7CB5E3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetTestMundial.Domain.Tests", "tests\DotNetTestMundial.Domain.Tests\DotNetTestMundial.Domain.Tests.csproj", "{B1EB65EC-DC46-41CE-9A49-627403F4A769}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetTestMundial.Application.Tests", "tests\DotNetTestMundial.Application.Tests\DotNetTestMundial.Application.Tests.csproj", "{17CAB9E8-CD4D-47A6-A7F4-2BC5516A88C8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -10,5 +26,39 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9D2B2897-E2D9-46E6-B398-6AEC250FEAD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D2B2897-E2D9-46E6-B398-6AEC250FEAD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D2B2897-E2D9-46E6-B398-6AEC250FEAD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D2B2897-E2D9-46E6-B398-6AEC250FEAD6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F02D8BCB-E463-4731-9A0E-9ED889CCEE8A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F02D8BCB-E463-4731-9A0E-9ED889CCEE8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F02D8BCB-E463-4731-9A0E-9ED889CCEE8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F02D8BCB-E463-4731-9A0E-9ED889CCEE8A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5AE42908-896A-4A15-A560-542D64E41BF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AE42908-896A-4A15-A560-542D64E41BF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5AE42908-896A-4A15-A560-542D64E41BF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5AE42908-896A-4A15-A560-542D64E41BF4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA966813-0095-470D-AAAD-83388ED413FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA966813-0095-470D-AAAD-83388ED413FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA966813-0095-470D-AAAD-83388ED413FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA966813-0095-470D-AAAD-83388ED413FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B1EB65EC-DC46-41CE-9A49-627403F4A769}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1EB65EC-DC46-41CE-9A49-627403F4A769}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1EB65EC-DC46-41CE-9A49-627403F4A769}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1EB65EC-DC46-41CE-9A49-627403F4A769}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17CAB9E8-CD4D-47A6-A7F4-2BC5516A88C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17CAB9E8-CD4D-47A6-A7F4-2BC5516A88C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17CAB9E8-CD4D-47A6-A7F4-2BC5516A88C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17CAB9E8-CD4D-47A6-A7F4-2BC5516A88C8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9D2B2897-E2D9-46E6-B398-6AEC250FEAD6} = {160866B1-3E4F-46D3-9967-F316BE5EF009}
+		{F02D8BCB-E463-4731-9A0E-9ED889CCEE8A} = {160866B1-3E4F-46D3-9967-F316BE5EF009}
+		{5AE42908-896A-4A15-A560-542D64E41BF4} = {160866B1-3E4F-46D3-9967-F316BE5EF009}
+		{CA966813-0095-470D-AAAD-83388ED413FE} = {160866B1-3E4F-46D3-9967-F316BE5EF009}
+		{B1EB65EC-DC46-41CE-9A49-627403F4A769} = {C1B6B96D-3266-402D-91EF-D548EA7CB5E3}
+		{17CAB9E8-CD4D-47A6-A7F4-2BC5516A88C8} = {C1B6B96D-3266-402D-91EF-D548EA7CB5E3}
 	EndGlobalSection
 EndGlobal
