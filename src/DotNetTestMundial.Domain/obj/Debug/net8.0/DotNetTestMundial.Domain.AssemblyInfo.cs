@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DotNetTestMundial.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fb4d7aaaa20b99897a0f945b119d68339841267c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+202434fa346b0274fd26e9b3e0fe650e71acf774")]
 [assembly: System.Reflection.AssemblyProductAttribute("DotNetTestMundial.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DotNetTestMundial.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
