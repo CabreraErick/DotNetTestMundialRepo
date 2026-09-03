@@ -1,11 +1,26 @@
 using DotNetTestMundial.Domain.Common;
 using DotNetTestMundial.Domain.Enums;
+using DotNetTestMundial.Domain.Events;
 
 namespace DotNetTestMundial.Domain.Entities;
 
 public sealed class Match : Entity
 {
-    private readonly List<Goal> _goals = new();
+    private Match()
+    {
+    }
+
+    private Match(
+        Guid id,
+        Guid homeTeamId,
+        Guid awayTeamId,
+        DateTime scheduledAt) : base(id)
+    {
+        HomeTeamId = homeTeamId;
+        AwayTeamId = awayTeamId;
+        ScheduledAt = scheduledAt;
+        Status = MatchStatus.Scheduled;
+    }
 
     public Guid HomeTeamId { get; private set; }
 
@@ -19,43 +34,33 @@ public sealed class Match : Entity
 
     public int? AwayScore { get; private set; }
 
-    public IReadOnlyCollection<Goal> Goals => _goals.AsReadOnly();
-
-    private Match()
-    {
-    }
-
-    private Match(
-        Guid homeTeamId,
-        Guid awayTeamId,
-        DateTime scheduledAt)
-    {
-        HomeTeamId = homeTeamId;
-        AwayTeamId = awayTeamId;
-        ScheduledAt = scheduledAt;
-        Status = MatchStatus.Scheduled;
-    }
-
     public static Match Create(
         Guid homeTeamId,
         Guid awayTeamId,
         DateTime scheduledAt)
     {
         if (homeTeamId == Guid.Empty)
+        {
             throw new ArgumentException(
-                "Home team is required.",
+                "Home team id is required.",
                 nameof(homeTeamId));
+        }
 
         if (awayTeamId == Guid.Empty)
+        {
             throw new ArgumentException(
-                "Away team is required.",
+                "Away team id is required.",
                 nameof(awayTeamId));
+        }
 
         if (homeTeamId == awayTeamId)
+        {
             throw new ArgumentException(
                 "A team cannot play against itself.");
+        }
 
         return new Match(
+            Guid.NewGuid(),
             homeTeamId,
             awayTeamId,
             scheduledAt);
@@ -65,43 +70,54 @@ public sealed class Match : Entity
         int homeScore,
         int awayScore)
     {
-        if (Status != MatchStatus.Scheduled)
+        if (Status == MatchStatus.Cancelled)
+        {
             throw new InvalidOperationException(
-                "Only scheduled matches can receive a result.");
+                "Cannot register a result for a cancelled match.");
+        }
 
         if (homeScore < 0)
+        {
             throw new ArgumentOutOfRangeException(
                 nameof(homeScore));
+        }
 
         if (awayScore < 0)
+        {
             throw new ArgumentOutOfRangeException(
                 nameof(awayScore));
+        }
 
         HomeScore = homeScore;
         AwayScore = awayScore;
         Status = MatchStatus.Played;
+
+        RaiseDomainEvent(
+            new MatchResultRegisteredEvent(
+                Id,
+                homeScore,
+                awayScore,
+                DateTime.UtcNow));
     }
 
-    public void AddGoal(Goal goal)
+    public void Reschedule(DateTime scheduledAt)
     {
-        ArgumentNullException.ThrowIfNull(goal);
-
         if (Status != MatchStatus.Scheduled)
+        {
             throw new InvalidOperationException(
-                "Goals can only be registered before the match result is finalized.");
+                "Only scheduled matches can be rescheduled.");
+        }
 
-        if (goal.MatchId != Id)
-            throw new InvalidOperationException(
-                "The goal does not belong to this match.");
-
-        _goals.Add(goal);
+        ScheduledAt = scheduledAt;
     }
 
     public void Cancel()
     {
-        if (Status != MatchStatus.Scheduled)
+        if (Status == MatchStatus.Played)
+        {
             throw new InvalidOperationException(
-                "Only scheduled matches can be cancelled.");
+                "A played match cannot be cancelled.");
+        }
 
         Status = MatchStatus.Cancelled;
     }

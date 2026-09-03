@@ -2,19 +2,24 @@ namespace DotNetTestMundial.Domain.Common;
 
 public abstract class Entity
 {
-    private readonly List<object> _domainEvents = new ();
+    private readonly List<IDomainEvent> _domainEvents = [];
 
-    public Guid Id {get; protected set;}
-
-    public IReadOnlyCollection<object> DomainEvents => _domainEvents.AsReadOnly();
-    protected Entity()
+    protected Entity(Guid id)
     {
-        Id = Guid.NewGuid();
+        Id = id;
     }
 
-    protected void AddDomainEvent(object domainEvent)
+    protected Entity()
     {
-        ArgumentNullException.ThrowIfNull(domainEvent);
+    }
+
+    public Guid Id { get; protected set; }
+
+    public IReadOnlyCollection<IDomainEvent> DomainEvents =>
+        _domainEvents.AsReadOnly();
+
+    protected void RaiseDomainEvent(IDomainEvent domainEvent)
+    {
         _domainEvents.Add(domainEvent);
     }
 
@@ -26,4 +31,5 @@ public abstract class Entity
 
 /*
     Guid: evita que la identidad dependa de una secuenca de base de datos
+    Todas las entidades tienen entidad y permiten generar eventos
 */
