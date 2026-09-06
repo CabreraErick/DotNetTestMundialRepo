@@ -4,15 +4,12 @@ namespace DotNetTestMundial.Domain.Entities;
 
 public sealed class Player : Entity
 {
-    public Guid TeamId {get; private set;}
-    public string Name { get; private set; }
+    public Guid TeamId { get; private set; }
+    public string Name { get; private set; } = string.Empty;
     public int JerseyNumber { get; private set; }
-    public bool IsActive { get; private set; }    
+    public bool IsActive { get; private set; }
 
-    private Player()
-    {
-        Name = string.Empty;
-    }
+    private Player() { }
 
     private Player(Guid teamId, string name, int jerseyNumber)
     {
@@ -22,42 +19,33 @@ public sealed class Player : Entity
         IsActive = true;
     }
 
-    public static Player Create(Guid teamId, string name, int jerseyNumber)
+    public static Result<Player> Create(Guid teamId, string? name, int jerseyNumber)
     {
-        if(teamId == Guid.Empty)
-        {
-            throw new ArgumentException("Team is required", nameof(teamId));
-        }
-        if(string.IsNullOrWhiteSpace(name))
-        {
-            throw new ArgumentException("Player name is required", nameof(name));
-        }   
-        if(jerseyNumber <= 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(jerseyNumber), "Jersey number must be more than zero");
-        }     
+        if (teamId == Guid.Empty)
+            return Result<Player>.Failure(DomainErrors.TeamRequired);
+        if (string.IsNullOrWhiteSpace(name))
+            return Result<Player>.Failure(DomainErrors.PlayerNameRequired);
+        if (jerseyNumber <= 0)
+            return Result<Player>.Failure(DomainErrors.InvalidJerseyNumber);
 
-        return new Player(teamId,name.Trim(),jerseyNumber);
+        return Result<Player>.Success(new Player(teamId, name.Trim(), jerseyNumber));
     }
 
-    public void Update(string name, int jerseyNumber)
+    public Result Update(string? name, int jerseyNumber)
     {
-        if(string.IsNullOrWhiteSpace(name))
-        {
-            throw new ArgumentException("Player name is required", nameof(name));
-        }
-
-        if(jerseyNumber <= 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(jerseyNumber));
-        }
+        if (string.IsNullOrWhiteSpace(name))
+            return Result.Failure(DomainErrors.PlayerNameRequired);
+        if (jerseyNumber <= 0)
+            return Result.Failure(DomainErrors.InvalidJerseyNumber);
 
         Name = name.Trim();
         JerseyNumber = jerseyNumber;
+        return Result.Success();
     }
 
-    public void Deactivate()
+    public Result Deactivate()
     {
         IsActive = false;
+        return Result.Success();
     }
 }
