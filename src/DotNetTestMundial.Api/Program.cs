@@ -1,4 +1,5 @@
 using DotNetTestMundial.Infrastructure;
+using DotNetTestMundial.Application.Teams.CreateTeam;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +8,7 @@ var connectionString = builder.Configuration.GetConnectionString("Tournament");
 if (string.IsNullOrWhiteSpace(connectionString))
     throw new InvalidOperationException("Configure ConnectionStrings: Tournament (environment variable ConnectionStrings__Tournament) for this instance.");
 builder.Services.AddInfrastructure(connectionString);
+builder.Services.AddScoped<CreateTeamCommandHandler>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

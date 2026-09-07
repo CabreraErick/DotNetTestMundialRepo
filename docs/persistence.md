@@ -47,11 +47,11 @@ No se habilitaron reintentos automáticos: cuando se incorporen, deben coordinar
 
 ## Errores y límites actuales
 
-`Persistence.ConcurrentChange` representa que EF no pudo actualizar/eliminar la fila esperada. `Persistence.ConstraintViolation` representa conflictos reconocidos de restricciones o relaciones. Ambos son `Conflict`; la futura API deberá mapearlos a HTTP 409. El detalle interno de SQL Server no se devuelve al cliente.
+`Persistence.ConcurrentChange` representa que EF no pudo actualizar/eliminar la fila esperada. `Persistence.ConstraintViolation` representa conflictos reconocidos de restricciones o relaciones. Ambos son `Conflict`; la API los mapea a HTTP 409. El detalle interno de SQL Server no se devuelve al cliente.
 
 Este bloque no implementa un token de versión para detectar dos actualizaciones simultáneas sobre una fila que sigue existiendo. Esa protección debe resolverse al implementar los Commands de modificación y registro de resultados. La prueba de concurrencia actual comprueba el caso de una fila eliminada por otra operación.
 
-Los eventos continúan en memoria después de un commit exitoso. Su publicación, registro y vinculación con TraceId/CorrelationId siguen pendientes. Las consultas de negocio se implementarán con Dapper; las lecturas EF incluidas en las pruebas son comprobaciones de persistencia, no Queries de la aplicación.
+Los eventos continúan en memoria después de un commit exitoso. Su publicación, registro y vinculación con TraceId/CorrelationId siguen pendientes. Las consultas de negocio se implementarán con Dapper; el bloque 3B ya utiliza Dapper para consultar respuestas idempotentes. Las lecturas EF incluidas en las pruebas son comprobaciones de persistencia, no Queries de la aplicación.
 
 ## Configuración y comandos
 

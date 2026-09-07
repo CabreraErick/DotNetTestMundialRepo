@@ -91,6 +91,7 @@ public class PersistenceUnitTests
         Assert.Contains("CREATE TABLE [Players]", script);
         Assert.Contains("CREATE TABLE [Matches]", script);
         Assert.Contains("CREATE TABLE [Goals]", script);
+        Assert.Contains("CREATE TABLE [IdempotencyRecords]", script);
         Assert.DoesNotContain("DomainEvents", script);
         Assert.Equal(System.Data.ConnectionState.Closed, context.Database.GetDbConnection().State);
     }
@@ -99,7 +100,9 @@ public class PersistenceUnitTests
     public void InitialMigration_MatchesCurrentSqlServerModel()
     {
         using var context = CreateContext();
-        Assert.EndsWith("_InitialPersistence", Assert.Single(context.Database.GetMigrations()));
+        var migrations = context.Database.GetMigrations().ToArray();
+        Assert.Equal(2, migrations.Length);
+        Assert.EndsWith("_AddIdempotencyRecords", migrations[^1]);
         Assert.False(context.Database.HasPendingModelChanges());
         Assert.Equal(System.Data.ConnectionState.Closed, context.Database.GetDbConnection().State);
     }
