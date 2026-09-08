@@ -1,3 +1,5 @@
+// Responsabilidad del archivo: Verifica el contrato de éxito, fallo y acceso a valores de Result.
+// Relación en el sistema: Protege el patrón de errores compartido por Domain, Application y API.
 using DotNetTestMundial.Domain.Common;
 
 namespace DotNetTestMundial.Domain.Tests.Common;

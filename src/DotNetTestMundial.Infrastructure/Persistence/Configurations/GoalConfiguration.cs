@@ -1,3 +1,5 @@
+// Responsabilidad del archivo: Configura con EF Core la persistencia de Goal.
+// Relación en el sistema: TournamentDbContext descubre este mapeo y las migraciones reflejan sus restricciones.
 using DotNetTestMundial.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

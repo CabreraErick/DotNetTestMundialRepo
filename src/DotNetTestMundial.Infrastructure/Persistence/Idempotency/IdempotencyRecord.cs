@@ -1,3 +1,5 @@
+// Responsabilidad del archivo: Representa la fila técnica que conserva una respuesta POST.
+// Relación en el sistema: Su configuración impone clave única y SqlIdempotencyStore la prepara junto con Team.
 namespace DotNetTestMundial.Infrastructure.Persistence.Idempotency;
 
 internal sealed class IdempotencyRecord

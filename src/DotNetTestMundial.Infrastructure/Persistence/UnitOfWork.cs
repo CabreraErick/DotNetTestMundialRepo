@@ -1,3 +1,5 @@
+// Responsabilidad del archivo: Implementa el commit explícito y rollback transaccional.
+// Relación en el sistema: Agrupa cambios preparados por repositorios y traduce fallos mediante IPersistenceErrorTranslator.
 using DotNetTestMundial.Application.Abstractions.Persistence;
 using DotNetTestMundial.Domain.Common;
 using Microsoft.EntityFrameworkCore;

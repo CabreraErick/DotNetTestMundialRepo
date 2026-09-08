@@ -1,3 +1,5 @@
+// Responsabilidad del archivo: Representa éxito o fallo esperado sin usar excepciones de negocio.
+// Relación en el sistema: Entidades y handlers lo usan; API inspecciona su categoría para elegir la respuesta HTTP.
 namespace DotNetTestMundial.Domain.Common;
 
 public class Result

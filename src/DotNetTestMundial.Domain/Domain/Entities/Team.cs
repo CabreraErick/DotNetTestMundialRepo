@@ -1,3 +1,5 @@
+// Responsabilidad del archivo: Modela un equipo y protege sus reglas de creación, edición y jugadores.
+// Relación en el sistema: Application invoca sus métodos; EF Core persiste su estado mediante TeamConfiguration.
 using DotNetTestMundial.Domain.Common;
 using DotNetTestMundial.Domain.Events;
 
@@ -17,6 +19,21 @@ public sealed class Team : Entity
     {
         Name = name;
         ShortName = shortName;
+    }
+
+    /// <summary>
+    /// Reconstructs a previously validated team returned by the Dapper read side. It does
+    /// not emit TeamCreatedEvent because hydration is not a new business occurrence.
+    /// Application uses the restored aggregate to execute Domain update rules before EF writes.
+    /// </summary>
+    public static Team Restore(Guid id, string name, string shortName)
+    {
+        if (id == Guid.Empty)
+            throw new ArgumentException("A persisted team must have an identifier.", nameof(id));
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        ArgumentException.ThrowIfNullOrWhiteSpace(shortName);
+        var team = new Team(name, shortName) { Id = id };
+        return team;
     }
 
     public static Result<Team> Create(string? name, string? shortName)

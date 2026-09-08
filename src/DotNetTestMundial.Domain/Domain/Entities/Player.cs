@@ -1,3 +1,5 @@
+// Responsabilidad del archivo: Modela un jugador registrado en un equipo y su estado activo.
+// Relación en el sistema: Team y Goal validan su pertenencia; PlayerConfiguration define su persistencia.
 using DotNetTestMundial.Domain.Common;
 
 namespace DotNetTestMundial.Domain.Entities;

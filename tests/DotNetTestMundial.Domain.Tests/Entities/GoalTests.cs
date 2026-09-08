@@ -1,3 +1,5 @@
+// Responsabilidad del archivo: Verifica las reglas públicas de Goal.
+// Relación en el sistema: Ejecuta el dominio de forma aislada y previene regresiones antes de persistencia o HTTP.
 using DotNetTestMundial.Domain.Common;
 using DotNetTestMundial.Domain.Entities;
 

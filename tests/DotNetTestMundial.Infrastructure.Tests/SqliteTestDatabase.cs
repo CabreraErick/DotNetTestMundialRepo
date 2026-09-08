@@ -1,3 +1,5 @@
+// Responsabilidad del archivo: Proporciona una base SQLite relacional aislada para pruebas.
+// Relación en el sistema: Infrastructure.Tests la usa para comprobar transacciones sin tocar SQL Server del usuario.
 using DotNetTestMundial.Application.Abstractions.Persistence;
 using DotNetTestMundial.Domain.Common;
 using DotNetTestMundial.Infrastructure.Persistence;

@@ -1,3 +1,5 @@
+// Responsabilidad del archivo: Implementa la persistencia idempotente para SQL Server.
+// Relación en el sistema: Usa EF para incluir la respuesta en el commit y Dapper para reproducirla.
 using Dapper;
 using DotNetTestMundial.Application.Abstractions.Persistence;
 using Microsoft.Data.SqlClient;

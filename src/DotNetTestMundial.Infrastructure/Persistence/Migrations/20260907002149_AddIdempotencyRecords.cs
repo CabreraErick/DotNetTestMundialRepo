@@ -1,3 +1,5 @@
+// Responsabilidad del archivo: Define los cambios reversibles de esquema de la migración 20260907002149_AddIdempotencyRecords.
+// Relación en el sistema: EF Core la aplica a SQL Server y registra su identificador en __EFMigrationsHistory.
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 

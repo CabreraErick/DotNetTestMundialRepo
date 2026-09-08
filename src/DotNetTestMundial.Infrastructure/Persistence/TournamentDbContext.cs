@@ -1,3 +1,5 @@
+// Responsabilidad del archivo: Representa la sesión EF Core de escritura del torneo.
+// Relación en el sistema: Aplica configuraciones y restringe SaveChanges para obligar el uso de Unit of Work.
 using Microsoft.EntityFrameworkCore;
 
 namespace DotNetTestMundial.Infrastructure.Persistence;

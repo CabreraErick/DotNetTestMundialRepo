@@ -1,3 +1,5 @@
+// Responsabilidad del archivo: Modela un gol con autor, equipo, partido y minuto.
+// Relación en el sistema: Match valida su incorporación y GoalConfiguration garantiza sus referencias en SQL Server.
 using DotNetTestMundial.Domain.Common;
 
 namespace DotNetTestMundial.Domain.Entities;

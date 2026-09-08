@@ -1,3 +1,5 @@
+// Responsabilidad del archivo: Declara operaciones que preparan altas, cambios y eliminaciones.
+// Relación en el sistema: Los Commands usan este puerto y Unit of Work confirma todas las escrituras juntas.
 using DotNetTestMundial.Domain.Common;
 
 namespace DotNetTestMundial.Application.Abstractions.Persistence;

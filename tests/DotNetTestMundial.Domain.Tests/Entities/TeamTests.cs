@@ -1,3 +1,5 @@
+// Responsabilidad del archivo: Verifica las reglas públicas de Team.
+// Relación en el sistema: Ejecuta el dominio de forma aislada y previene regresiones antes de persistencia o HTTP.
 using DotNetTestMundial.Domain.Common;
 using DotNetTestMundial.Domain.Entities;
 using DotNetTestMundial.Domain.Events;
@@ -59,6 +61,19 @@ public class TeamTests
         Assert.True(team.Update(" Leones ", " leo ").IsSuccess);
         Assert.Equal("Leones", team.Name);
         Assert.Equal("LEO", team.ShortName);
+        Assert.Empty(team.DomainEvents);
+    }
+
+    [Fact]
+    public void Restore_RehydratesPersistedIdentityWithoutCreationEvent()
+    {
+        var id = Guid.NewGuid();
+
+        var team = Team.Restore(id, "Argentina", "ARG");
+
+        Assert.Equal(id, team.Id);
+        Assert.Equal("Argentina", team.Name);
+        Assert.Equal("ARG", team.ShortName);
         Assert.Empty(team.DomainEvents);
     }
 

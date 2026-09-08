@@ -1,3 +1,5 @@
+// Responsabilidad del archivo: Proporciona identidad y colección de eventos a las entidades del dominio.
+// Relación en el sistema: Team, Player, Match y Goal heredan esta base sin depender de Infrastructure.
 namespace DotNetTestMundial.Domain.Common;
 
 public abstract class Entity

@@ -1,3 +1,5 @@
+// Responsabilidad del archivo: Traduce concurrencia y restricciones conocidas de SQL Server.
+// Relación en el sistema: Impide exponer detalles internos y entrega conflictos tipados a Application.
 using DotNetTestMundial.Application.Abstractions.Persistence;
 using DotNetTestMundial.Domain.Common;
 using Microsoft.Data.SqlClient;

@@ -1,3 +1,5 @@
+// Responsabilidad del archivo: Representa un fallo de negocio con código, mensaje y categoría.
+// Relación en el sistema: Result lo transporta hasta Application y API sin acoplar Domain a HTTP.
 namespace DotNetTestMundial.Domain.Common;
 
 public enum ErrorType

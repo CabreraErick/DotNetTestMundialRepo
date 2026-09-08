@@ -1,3 +1,5 @@
+// Responsabilidad del archivo: Comprueba contratos y configuración de la capa Infrastructure.
+// Relación en el sistema: Valida SaveChanges bloqueado, DI, esquema SQL Server y sincronía de migraciones.
 using DotNetTestMundial.Application.Abstractions.Persistence;
 using DotNetTestMundial.Domain.Entities;
 using DotNetTestMundial.Infrastructure.Persistence;

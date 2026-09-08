@@ -1,3 +1,5 @@
+// Responsabilidad del archivo: Modela calendario, estado, goles y resultado coherente de un partido.
+// Relación en el sistema: Application lo utilizará en Commands y MatchConfiguration conserva sus relaciones.
 using DotNetTestMundial.Domain.Common;
 using DotNetTestMundial.Domain.Enums;
 using DotNetTestMundial.Domain.Events;

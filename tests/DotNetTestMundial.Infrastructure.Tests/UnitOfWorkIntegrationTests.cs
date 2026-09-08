@@ -1,3 +1,5 @@
+// Responsabilidad del archivo: Comprueba integración de repositorios, relaciones y transacciones.
+// Relación en el sistema: Ejecuta UnitOfWork sobre SQLite y verifica persistencia, rollback y concurrencia.
 using System.Data.Common;
 using DotNetTestMundial.Application.Abstractions.Persistence;
 using DotNetTestMundial.Domain.Entities;

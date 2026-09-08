@@ -1,3 +1,5 @@
+// Responsabilidad del archivo: Comparte el mapeo de identidad y eventos no persistidos.
+// Relación en el sistema: Las configuraciones de todas las entidades reutilizan estas reglas EF Core.
 using DotNetTestMundial.Domain.Common;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

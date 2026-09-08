@@ -1,3 +1,5 @@
+// Responsabilidad del archivo: Centraliza errores esperados de restricciones y concurrencia.
+// Relación en el sistema: Unit of Work los devuelve como Result y API los transforma en HTTP 409.
 using DotNetTestMundial.Domain.Common;
 
 namespace DotNetTestMundial.Application.Abstractions.Persistence;

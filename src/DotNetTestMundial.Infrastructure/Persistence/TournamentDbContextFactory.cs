@@ -1,3 +1,5 @@
+// Responsabilidad del archivo: Crea el DbContext para herramientas de diseño de EF Core.
+// Relación en el sistema: dotnet-ef la usa para generar y aplicar migraciones sin iniciar API.
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 

@@ -1,4 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Responsabilidad del proyecto: Ejecuta verificaciones automatizadas de DotNetTestMundial.Infrastructure y referencia la capa sometida a prueba. -->
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>

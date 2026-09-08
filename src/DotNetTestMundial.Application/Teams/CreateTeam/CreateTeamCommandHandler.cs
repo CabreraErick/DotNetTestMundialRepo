@@ -1,3 +1,5 @@
+// Responsabilidad del archivo: Orquesta creación, idempotencia y commit transaccional del equipo.
+// Relación en el sistema: Une Team del dominio con IWriteRepository, IIdempotencyStore e IUnitOfWork.
 using DotNetTestMundial.Application.Abstractions.Messaging;
 using DotNetTestMundial.Application.Abstractions.Persistence;
 using DotNetTestMundial.Domain.Common;

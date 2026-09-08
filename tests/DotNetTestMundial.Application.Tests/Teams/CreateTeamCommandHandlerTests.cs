@@ -1,3 +1,5 @@
+// Responsabilidad del archivo: Verifica el Command de creación e idempotencia de equipos.
+// Relación en el sistema: Usa dobles de los puertos Application para aislar reglas de orquestación.
 using DotNetTestMundial.Application.Abstractions.Persistence;
 using DotNetTestMundial.Application.Teams.CreateTeam;
 using DotNetTestMundial.Domain.Common;

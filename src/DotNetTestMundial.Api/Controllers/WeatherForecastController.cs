@@ -1,3 +1,5 @@
+// Responsabilidad del archivo: Controlador de plantilla conservado temporalmente para referencia del proyecto inicial.
+// Relación en el sistema: No participa en los flujos del torneo y deberá retirarse antes de la entrega.
 using Microsoft.AspNetCore.Mvc;
 
 namespace DotNetTestMundial.Api.Controllers;

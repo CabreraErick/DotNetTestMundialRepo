@@ -1,3 +1,5 @@
+// Responsabilidad del archivo: Define fallos esperados de las claves idempotentes.
+// Relación en el sistema: El handler los devuelve mediante Result y TeamsController los mapea a 400 o 409.
 using DotNetTestMundial.Domain.Common;
 
 namespace DotNetTestMundial.Application.Teams.CreateTeam;

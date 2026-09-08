@@ -1,3 +1,5 @@
+// Responsabilidad del archivo: Implementa el puerto genérico de escrituras con EF Core.
+// Relación en el sistema: Sólo cambia estados del DbContext; UnitOfWork es responsable de guardar.
 using DotNetTestMundial.Application.Abstractions.Persistence;
 using DotNetTestMundial.Domain.Common;
 using Microsoft.EntityFrameworkCore;

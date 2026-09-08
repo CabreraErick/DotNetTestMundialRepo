@@ -1,3 +1,5 @@
+// Responsabilidad del archivo: Configura con EF Core la persistencia de IdempotencyRecord.
+// Relación en el sistema: TournamentDbContext descubre este mapeo y las migraciones reflejan sus restricciones.
 using DotNetTestMundial.Infrastructure.Persistence.Idempotency;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

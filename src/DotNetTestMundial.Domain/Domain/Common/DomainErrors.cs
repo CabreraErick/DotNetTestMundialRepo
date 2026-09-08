@@ -1,3 +1,5 @@
+// Responsabilidad del archivo: Centraliza errores invariantes de equipos, jugadores, partidos y goles.
+// Relación en el sistema: Las entidades los retornan mediante Result y las pruebas verifican sus códigos.
 namespace DotNetTestMundial.Domain.Common;
 
 public static class DomainErrors
