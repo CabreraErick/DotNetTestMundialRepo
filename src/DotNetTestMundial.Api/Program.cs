@@ -7,6 +7,11 @@ using DotNetTestMundial.Application.Teams.Mutations;
 using DotNetTestMundial.Application.Players.CreatePlayer;
 using DotNetTestMundial.Application.Players.GetPlayers;
 using DotNetTestMundial.Application.Players.Mutations;
+using DotNetTestMundial.Application.Matches.CreateMatch;
+using DotNetTestMundial.Application.Matches.GetMatches;
+using DotNetTestMundial.Application.Matches.Mutations;
+using DotNetTestMundial.Application.Matches.Results;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,8 +34,21 @@ builder.Services.AddScoped<GetPlayerByIdQueryHandler>();
 builder.Services.AddScoped<UpdatePlayerCommandHandler>();
 builder.Services.AddScoped<PatchPlayerCommandHandler>();
 builder.Services.AddScoped<DeletePlayerCommandHandler>();
+builder.Services.AddScoped<MatchTeamValidator>();
+builder.Services.AddScoped<CreateMatchCommandHandler>();
+builder.Services.AddScoped<GetMatchesQueryHandler>();
+builder.Services.AddScoped<GetMatchByIdQueryHandler>();
+builder.Services.AddScoped<UpdateMatchCommandHandler>();
+builder.Services.AddScoped<PatchMatchCommandHandler>();
+builder.Services.AddScoped<DeleteMatchCommandHandler>();
+builder.Services.AddScoped<CreateGoalCommandHandler>();
+builder.Services.AddScoped<GetMatchGoalsQueryHandler>();
+builder.Services.AddScoped<RegisterMatchResultCommandHandler>();
 
-builder.Services.AddControllers();
+// Domain enums are exposed by their stable names so Swagger and clients can read
+// Scheduled, Played and Cancelled instead of depending on database integer values.
+builder.Services.AddControllers().AddJsonOptions(options =>
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

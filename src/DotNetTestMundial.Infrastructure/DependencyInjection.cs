@@ -25,6 +25,7 @@ public static class DependencyInjection
         // resolve TournamentDbContext, preserving the CQRS read/write separation.
         services.AddScoped<ITeamReadRepository>(_ => new SqlTeamReadRepository(connectionString));
         services.AddScoped<IPlayerReadRepository>(_ => new SqlPlayerReadRepository(connectionString));
+        services.AddScoped<IMatchReadRepository>(_ => new SqlMatchReadRepository(connectionString));
         services.AddSingleton<IPersistenceErrorTranslator, SqlServerPersistenceErrorTranslator>();
         return services;
     }

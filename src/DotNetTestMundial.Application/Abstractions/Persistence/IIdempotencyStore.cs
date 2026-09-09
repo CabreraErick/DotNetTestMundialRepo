@@ -1,5 +1,5 @@
 // Responsabilidad del archivo: Modela el almacenamiento y recuperación de respuestas idempotentes.
-// Relación en el sistema: CreateTeamCommandHandler lo usa; Infrastructure combina EF para escritura y Dapper para lectura.
+// Relación en el sistema: Los POST handlers lo usan; Infrastructure combina EF para escritura y Dapper para lectura.
 namespace DotNetTestMundial.Application.Abstractions.Persistence;
 
 public interface IIdempotencyStore

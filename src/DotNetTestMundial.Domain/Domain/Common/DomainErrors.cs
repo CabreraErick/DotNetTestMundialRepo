@@ -15,6 +15,7 @@ public static class DomainErrors
     public static readonly Error HomeTeamRequired = new("Match.HomeTeamRequired", "Home team is required.");
     public static readonly Error AwayTeamRequired = new("Match.AwayTeamRequired", "Away team is required.");
     public static readonly Error SameTeams = new("Match.SameTeams", "A team cannot play against itself.");
+    public static readonly Error ScheduledAtRequired = new("Match.ScheduledAtRequired", "A scheduled date is required.");
     public static readonly Error MatchNotScheduled = new("Match.NotScheduled", "Only scheduled matches can be changed.", ErrorType.Conflict);
     public static readonly Error NegativeScore = new("Match.NegativeScore", "Scores cannot be negative.");
     public static readonly Error ScoreMismatch = new("Match.ScoreMismatch", "The score must match the registered goals for each team.");

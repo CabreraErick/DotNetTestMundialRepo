@@ -48,4 +48,21 @@ public class GoalTests
         Assert.Equal(DomainErrors.InactivePlayer, result.Error);
         Assert.Equal(ErrorType.Conflict, result.Error!.Type);
     }
+
+    [Fact]
+    public void Restore_ReconstructsPersistedIdentityAndRelationships()
+    {
+        var id = Guid.NewGuid();
+        var matchId = Guid.NewGuid();
+        var playerId = Guid.NewGuid();
+        var teamId = Guid.NewGuid();
+
+        var goal = Goal.Restore(id, matchId, playerId, teamId, 45);
+
+        Assert.Equal(id, goal.Id);
+        Assert.Equal(matchId, goal.MatchId);
+        Assert.Equal(playerId, goal.PlayerId);
+        Assert.Equal(teamId, goal.TeamId);
+        Assert.Equal(45, goal.Minute);
+    }
 }

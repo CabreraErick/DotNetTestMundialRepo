@@ -200,6 +200,34 @@ public class UnitOfWorkIntegrationTests
     }
 
     [Fact]
+    public async Task UpdatingDisconnectedMatch_PersistsCancellation()
+    {
+        await using var database = await SqliteTestDatabase.CreateAsync();
+        await using var context = database.CreateContext();
+        var home = Team.Create("Local", "LOC").Value;
+        var away = Team.Create("Visitante", "VIS").Value;
+        var date = new DateTime(2026, 9, 20, 15, 0, 0);
+        var match = Match.Create(home.Id, away.Id, date).Value;
+        new WriteRepository<Team>(context).Add(home);
+        new WriteRepository<Team>(context).Add(away);
+        new WriteRepository<Match>(context).Add(match);
+        Assert.True((await SqliteTestDatabase.CreateUnitOfWork(context).CommitAsync()).IsSuccess);
+        context.ChangeTracker.Clear();
+
+        var restored = Match.Restore(
+            match.Id, home.Id, away.Id, date, MatchStatus.Scheduled, null, null);
+        Assert.True(restored.Cancel().IsSuccess);
+        new WriteRepository<Match>(context).Update(restored);
+        Assert.True((await SqliteTestDatabase.CreateUnitOfWork(context).CommitAsync()).IsSuccess);
+
+        await using var reader = database.CreateContext();
+        var persisted = await reader.Set<Match>().SingleAsync();
+        Assert.Equal(MatchStatus.Cancelled, persisted.Status);
+        Assert.Null(persisted.HomeScore);
+        Assert.Null(persisted.AwayScore);
+    }
+
+    [Fact]
     public async Task RemovingReferencedTeam_IsRejectedWithoutLosingPlayers()
     {
         await using var database = await SqliteTestDatabase.CreateAsync();

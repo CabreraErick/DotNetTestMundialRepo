@@ -22,6 +22,27 @@ public sealed class Goal : Entity
         Minute = minute;
     }
 
+    /// <summary>
+    /// Reconstructs a persisted goal so a result Command can verify the score through
+    /// Match without asking EF Core to perform a read.
+    /// </summary>
+    public static Goal Restore(Guid id, Guid matchId, Guid playerId, Guid teamId, int minute)
+    {
+        if (id == Guid.Empty)
+            throw new ArgumentException("A persisted goal must have an identifier.", nameof(id));
+        if (matchId == Guid.Empty)
+            throw new ArgumentException("A persisted goal must belong to a match.", nameof(matchId));
+        if (playerId == Guid.Empty)
+            throw new ArgumentException("A persisted goal must have a scorer.", nameof(playerId));
+        if (teamId == Guid.Empty)
+            throw new ArgumentException("A persisted goal must belong to a team.", nameof(teamId));
+        if (minute < 1 || minute > 120)
+            throw new ArgumentOutOfRangeException(nameof(minute));
+
+        var scorer = Player.Restore(playerId, teamId, "Persisted scorer", 1, true);
+        return new Goal(matchId, scorer, minute) { Id = id };
+    }
+
     public static Result<Goal> Create(Guid matchId, Player? scorer, int minute)
     {
         if (matchId == Guid.Empty)

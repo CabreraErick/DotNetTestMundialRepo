@@ -34,6 +34,53 @@ public class MatchTests
         Assert.Equal(DomainErrors.HomeTeamRequired, Match.Create(Guid.Empty, id, date).Error);
         Assert.Equal(DomainErrors.AwayTeamRequired, Match.Create(id, Guid.Empty, date).Error);
         Assert.Equal(DomainErrors.SameTeams, Match.Create(id, id, date).Error);
+        Assert.Equal(DomainErrors.ScheduledAtRequired, Match.Create(id, Guid.NewGuid(), default).Error);
+    }
+
+    [Fact]
+    public void Reschedule_ScheduledMatch_ChangesTeamsAndDate()
+    {
+        var match = CreateMatch();
+        var home = Guid.NewGuid();
+        var away = Guid.NewGuid();
+        var date = new DateTime(2026, 10, 1, 18, 0, 0, DateTimeKind.Utc);
+
+        var result = match.Reschedule(home, away, date);
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal(home, match.HomeTeamId);
+        Assert.Equal(away, match.AwayTeamId);
+        Assert.Equal(date, match.ScheduledAt);
+    }
+
+    [Fact]
+    public void Reschedule_FinalizedMatch_ReturnsConflictWithoutMutation()
+    {
+        var match = CreateMatch();
+        match.RegisterResult(0, 0);
+        var originalDate = match.ScheduledAt;
+
+        var result = match.Reschedule(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow);
+
+        Assert.Equal(DomainErrors.MatchNotScheduled, result.Error);
+        Assert.Equal(originalDate, match.ScheduledAt);
+    }
+
+    [Fact]
+    public void Restore_PreservesPersistedScheduledStateWithoutEvents()
+    {
+        var id = Guid.NewGuid();
+        var home = Guid.NewGuid();
+        var away = Guid.NewGuid();
+        var date = DateTime.UtcNow;
+
+        var match = Match.Restore(id, home, away, date, MatchStatus.Scheduled, null, null);
+
+        Assert.Equal(id, match.Id);
+        Assert.Equal(home, match.HomeTeamId);
+        Assert.Equal(away, match.AwayTeamId);
+        Assert.Equal(date, match.ScheduledAt);
+        Assert.Empty(match.DomainEvents);
     }
 
     [Fact]

@@ -28,6 +28,43 @@ public sealed class Match : Entity
         Status = MatchStatus.Scheduled;
     }
 
+    /// <summary>
+    /// Reconstructs the persisted scalar state used by scheduling Commands. Goals are read
+    /// separately by Dapper and are not needed to cancel or reprogram an eligible match.
+    /// </summary>
+    public static Match Restore(
+        Guid id,
+        Guid homeTeamId,
+        Guid awayTeamId,
+        DateTime scheduledAt,
+        MatchStatus status,
+        int? homeScore,
+        int? awayScore)
+    {
+        if (id == Guid.Empty)
+            throw new ArgumentException("A persisted match must have an identifier.", nameof(id));
+        if (homeTeamId == Guid.Empty || awayTeamId == Guid.Empty || homeTeamId == awayTeamId)
+            throw new ArgumentException("Persisted match teams are invalid.", nameof(homeTeamId));
+        if (scheduledAt == default)
+            throw new ArgumentException("A persisted match must have a scheduled date.", nameof(scheduledAt));
+        if (!Enum.IsDefined(status))
+            throw new ArgumentOutOfRangeException(nameof(status));
+        var played = status == MatchStatus.Played;
+        var hasBothScores = homeScore.HasValue && awayScore.HasValue;
+        var hasAnyScore = homeScore.HasValue || awayScore.HasValue;
+        if ((played && (!hasBothScores || homeScore < 0 || awayScore < 0)) ||
+            (!played && hasAnyScore))
+            throw new ArgumentException("Persisted score and status are inconsistent.", nameof(status));
+
+        return new Match(homeTeamId, awayTeamId, scheduledAt)
+        {
+            Id = id,
+            Status = status,
+            HomeScore = homeScore,
+            AwayScore = awayScore
+        };
+    }
+
     public static Result<Match> Create(Guid homeTeamId, Guid awayTeamId, DateTime scheduledAt)
     {
         if (homeTeamId == Guid.Empty)
@@ -36,8 +73,30 @@ public sealed class Match : Entity
             return Result<Match>.Failure(DomainErrors.AwayTeamRequired);
         if (homeTeamId == awayTeamId)
             return Result<Match>.Failure(DomainErrors.SameTeams);
+        if (scheduledAt == default)
+            return Result<Match>.Failure(DomainErrors.ScheduledAtRequired);
 
         return Result<Match>.Success(new Match(homeTeamId, awayTeamId, scheduledAt));
+    }
+
+    /// <summary>Changes participants and date only while the match is still scheduled.</summary>
+    public Result Reschedule(Guid homeTeamId, Guid awayTeamId, DateTime scheduledAt)
+    {
+        if (Status != MatchStatus.Scheduled)
+            return Result.Failure(DomainErrors.MatchNotScheduled);
+        if (homeTeamId == Guid.Empty)
+            return Result.Failure(DomainErrors.HomeTeamRequired);
+        if (awayTeamId == Guid.Empty)
+            return Result.Failure(DomainErrors.AwayTeamRequired);
+        if (homeTeamId == awayTeamId)
+            return Result.Failure(DomainErrors.SameTeams);
+        if (scheduledAt == default)
+            return Result.Failure(DomainErrors.ScheduledAtRequired);
+
+        HomeTeamId = homeTeamId;
+        AwayTeamId = awayTeamId;
+        ScheduledAt = scheduledAt;
+        return Result.Success();
     }
 
     public Result RegisterResult(int homeScore, int awayScore)
