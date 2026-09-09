@@ -21,6 +21,24 @@ public sealed class Player : Entity
         IsActive = true;
     }
 
+    /// <summary>
+    /// Reconstructs a persisted player for a Command without treating the read as a new registration.
+    /// Application obtains the snapshot with Dapper and EF Core later persists only the requested change.
+    /// </summary>
+    public static Player Restore(
+        Guid id, Guid teamId, string name, int jerseyNumber, bool isActive)
+    {
+        if (id == Guid.Empty)
+            throw new ArgumentException("A persisted player must have an identifier.", nameof(id));
+        if (teamId == Guid.Empty)
+            throw new ArgumentException("A persisted player must belong to a team.", nameof(teamId));
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        if (jerseyNumber <= 0)
+            throw new ArgumentOutOfRangeException(nameof(jerseyNumber));
+
+        return new Player(teamId, name, jerseyNumber) { Id = id, IsActive = isActive };
+    }
+
     public static Result<Player> Create(Guid teamId, string? name, int jerseyNumber)
     {
         if (teamId == Guid.Empty)

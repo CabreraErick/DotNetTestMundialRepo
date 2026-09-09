@@ -177,6 +177,29 @@ public class UnitOfWorkIntegrationTests
     }
 
     [Fact]
+    public async Task UpdatingDisconnectedPlayer_PersistsLogicalDeletion()
+    {
+        await using var database = await SqliteTestDatabase.CreateAsync();
+        await using var context = database.CreateContext();
+        var team = Team.Create("Local", "LOC").Value;
+        var player = Player.Create(team.Id, "Ana", 10).Value;
+        new WriteRepository<Team>(context).Add(team);
+        new WriteRepository<Player>(context).Add(player);
+        Assert.True((await SqliteTestDatabase.CreateUnitOfWork(context).CommitAsync()).IsSuccess);
+        context.ChangeTracker.Clear();
+
+        var restored = Player.Restore(player.Id, team.Id, "Ana", 10, true);
+        restored.Deactivate();
+        new WriteRepository<Player>(context).Update(restored);
+        Assert.True((await SqliteTestDatabase.CreateUnitOfWork(context).CommitAsync()).IsSuccess);
+
+        await using var reader = database.CreateContext();
+        var persisted = await reader.Set<Player>().SingleAsync();
+        Assert.False(persisted.IsActive);
+        Assert.Equal(team.Id, persisted.TeamId);
+    }
+
+    [Fact]
     public async Task RemovingReferencedTeam_IsRejectedWithoutLosingPlayers()
     {
         await using var database = await SqliteTestDatabase.CreateAsync();

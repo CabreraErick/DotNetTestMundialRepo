@@ -24,6 +24,7 @@ public static class DependencyInjection
         // Read repositories receive only the connection string and use Dapper; they never
         // resolve TournamentDbContext, preserving the CQRS read/write separation.
         services.AddScoped<ITeamReadRepository>(_ => new SqlTeamReadRepository(connectionString));
+        services.AddScoped<IPlayerReadRepository>(_ => new SqlPlayerReadRepository(connectionString));
         services.AddSingleton<IPersistenceErrorTranslator, SqlServerPersistenceErrorTranslator>();
         return services;
     }

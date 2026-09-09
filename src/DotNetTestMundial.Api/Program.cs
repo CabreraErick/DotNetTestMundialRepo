@@ -4,6 +4,9 @@ using DotNetTestMundial.Infrastructure;
 using DotNetTestMundial.Application.Teams.CreateTeam;
 using DotNetTestMundial.Application.Teams.GetTeams;
 using DotNetTestMundial.Application.Teams.Mutations;
+using DotNetTestMundial.Application.Players.CreatePlayer;
+using DotNetTestMundial.Application.Players.GetPlayers;
+using DotNetTestMundial.Application.Players.Mutations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +23,12 @@ builder.Services.AddScoped<GetTeamByIdQueryHandler>();
 builder.Services.AddScoped<UpdateTeamCommandHandler>();
 builder.Services.AddScoped<PatchTeamCommandHandler>();
 builder.Services.AddScoped<DeleteTeamCommandHandler>();
+builder.Services.AddScoped<CreatePlayerCommandHandler>();
+builder.Services.AddScoped<GetPlayersQueryHandler>();
+builder.Services.AddScoped<GetPlayerByIdQueryHandler>();
+builder.Services.AddScoped<UpdatePlayerCommandHandler>();
+builder.Services.AddScoped<PatchPlayerCommandHandler>();
+builder.Services.AddScoped<DeletePlayerCommandHandler>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

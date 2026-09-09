@@ -59,6 +59,21 @@ public class PlayerTests
     }
 
     [Fact]
+    public void Restore_PreservesPersistedStateWithoutChangingIdentity()
+    {
+        var id = Guid.NewGuid();
+        var teamId = Guid.NewGuid();
+
+        var player = Player.Restore(id, teamId, "Ana", 10, false);
+
+        Assert.Equal(id, player.Id);
+        Assert.Equal(teamId, player.TeamId);
+        Assert.Equal("Ana", player.Name);
+        Assert.Equal(10, player.JerseyNumber);
+        Assert.False(player.IsActive);
+    }
+
+    [Fact]
     public void Deactivate_IsRepeatable()
     {
         var player = Player.Create(Guid.NewGuid(), "Ana", 10).Value;
