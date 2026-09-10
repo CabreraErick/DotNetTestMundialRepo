@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "5ZEe/sc7qIo=",
+  "dgSpecHash": "ku8XYhNho0A=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Erick\\source\\GitHub\\DotNetTestMundialRepo\\tests\\DotNetTestMundial.Domain.Tests\\DotNetTestMundial.Domain.Tests.csproj",
+  "projectFilePath": "C:\\Users\\Erick\\source\\GitHub\\DotNetTestMundialRepo-DevCodex\\tests\\DotNetTestMundial.Domain.Tests\\DotNetTestMundial.Domain.Tests.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Erick\\.nuget\\packages\\coverlet.collector\\6.0.0\\coverlet.collector.6.0.0.nupkg.sha512",
     "C:\\Users\\Erick\\.nuget\\packages\\microsoft.codecoverage\\17.8.0\\microsoft.codecoverage.17.8.0.nupkg.sha512",

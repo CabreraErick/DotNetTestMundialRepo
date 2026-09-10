@@ -11,6 +11,7 @@ using DotNetTestMundial.Application.Matches.CreateMatch;
 using DotNetTestMundial.Application.Matches.GetMatches;
 using DotNetTestMundial.Application.Matches.Mutations;
 using DotNetTestMundial.Application.Matches.Results;
+using DotNetTestMundial.Application.Tournament.Queries;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -44,6 +45,8 @@ builder.Services.AddScoped<DeleteMatchCommandHandler>();
 builder.Services.AddScoped<CreateGoalCommandHandler>();
 builder.Services.AddScoped<GetMatchGoalsQueryHandler>();
 builder.Services.AddScoped<RegisterMatchResultCommandHandler>();
+builder.Services.AddScoped<GetStandingsQueryHandler>();
+builder.Services.AddScoped<GetScorersQueryHandler>();
 
 // Domain enums are exposed by their stable names so Swagger and clients can read
 // Scheduled, Played and Cancelled instead of depending on database integer values.

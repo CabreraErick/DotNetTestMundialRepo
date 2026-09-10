@@ -26,6 +26,7 @@ public static class DependencyInjection
         services.AddScoped<ITeamReadRepository>(_ => new SqlTeamReadRepository(connectionString));
         services.AddScoped<IPlayerReadRepository>(_ => new SqlPlayerReadRepository(connectionString));
         services.AddScoped<IMatchReadRepository>(_ => new SqlMatchReadRepository(connectionString));
+        services.AddScoped<ITournamentReadRepository>(_ => new SqlTournamentReadRepository(connectionString));
         services.AddSingleton<IPersistenceErrorTranslator, SqlServerPersistenceErrorTranslator>();
         return services;
     }

@@ -5529,11 +5529,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Erick\\source\\GitHub\\DotNetTestMundialRepo\\tests\\DotNetTestMundial.Domain.Tests\\DotNetTestMundial.Domain.Tests.csproj",
+      "projectUniqueName": "C:\\Users\\Erick\\source\\GitHub\\DotNetTestMundialRepo-DevCodex\\tests\\DotNetTestMundial.Domain.Tests\\DotNetTestMundial.Domain.Tests.csproj",
       "projectName": "DotNetTestMundial.Domain.Tests",
-      "projectPath": "C:\\Users\\Erick\\source\\GitHub\\DotNetTestMundialRepo\\tests\\DotNetTestMundial.Domain.Tests\\DotNetTestMundial.Domain.Tests.csproj",
+      "projectPath": "C:\\Users\\Erick\\source\\GitHub\\DotNetTestMundialRepo-DevCodex\\tests\\DotNetTestMundial.Domain.Tests\\DotNetTestMundial.Domain.Tests.csproj",
       "packagesPath": "C:\\Users\\Erick\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Erick\\source\\GitHub\\DotNetTestMundialRepo\\tests\\DotNetTestMundial.Domain.Tests\\obj\\",
+      "outputPath": "C:\\Users\\Erick\\source\\GitHub\\DotNetTestMundialRepo-DevCodex\\tests\\DotNetTestMundial.Domain.Tests\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Erick\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -5548,8 +5548,8 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "C:\\Users\\Erick\\source\\GitHub\\DotNetTestMundialRepo\\src\\DotNetTestMundial.Domain\\DotNetTestMundial.Domain.csproj": {
-              "projectPath": "C:\\Users\\Erick\\source\\GitHub\\DotNetTestMundialRepo\\src\\DotNetTestMundial.Domain\\DotNetTestMundial.Domain.csproj"
+            "C:\\Users\\Erick\\source\\GitHub\\DotNetTestMundialRepo-DevCodex\\src\\DotNetTestMundial.Domain\\DotNetTestMundial.Domain.csproj": {
+              "projectPath": "C:\\Users\\Erick\\source\\GitHub\\DotNetTestMundialRepo-DevCodex\\src\\DotNetTestMundial.Domain\\DotNetTestMundial.Domain.csproj"
             }
           }
         }

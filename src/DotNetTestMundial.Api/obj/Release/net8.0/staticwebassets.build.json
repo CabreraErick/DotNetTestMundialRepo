@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "u+vh2OOMKr+1XOBDXBCYFOEMQAFZR8ro6/JzxAIlYKM=",
+  "Source": "DotNetTestMundial.Api",
+  "BasePath": "_content/DotNetTestMundial.Api",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

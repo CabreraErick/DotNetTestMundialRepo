@@ -8,6 +8,6 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = DotNetTestMundial.Domain.Tests
-build_property.ProjectDir = C:\Users\Erick\source\GitHub\DotNetTestMundialRepo\tests\DotNetTestMundial.Domain.Tests\
+build_property.ProjectDir = C:\Users\Erick\source\GitHub\DotNetTestMundialRepo-DevCodex\tests\DotNetTestMundial.Domain.Tests\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
