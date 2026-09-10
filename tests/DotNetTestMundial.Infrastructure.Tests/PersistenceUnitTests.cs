@@ -99,12 +99,12 @@ public class PersistenceUnitTests
     }
 
     [Fact]
-    public void InitialMigration_MatchesCurrentSqlServerModel()
+    public void Migrations_MatchCurrentSqlServerModelAndIncludeSeed()
     {
         using var context = CreateContext();
         var migrations = context.Database.GetMigrations().ToArray();
-        Assert.Equal(2, migrations.Length);
-        Assert.EndsWith("_AddIdempotencyRecords", migrations[^1]);
+        Assert.Equal(3, migrations.Length);
+        Assert.EndsWith("_SeedWorldCup2026Tournament", migrations[^1]);
         Assert.False(context.Database.HasPendingModelChanges());
         Assert.Equal(System.Data.ConnectionState.Closed, context.Database.GetDbConnection().State);
     }
