@@ -1,10 +1,12 @@
 // Responsabilidad del archivo: Registra adaptadores de persistencia y sus ciclos de vida.
 // Relación en el sistema: API llama AddInfrastructure y los handlers reciben interfaces definidas por Application.
+using DotNetTestMundial.Application.Abstractions.Events;
 using DotNetTestMundial.Application.Abstractions.Persistence;
 using DotNetTestMundial.Infrastructure.Persistence;
 using DotNetTestMundial.Infrastructure.Persistence.Repositories;
 using DotNetTestMundial.Infrastructure.Persistence.Idempotency;
 using DotNetTestMundial.Infrastructure.Persistence.Queries;
+using DotNetTestMundial.Infrastructure.Observability;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,6 +20,8 @@ public static class DependencyInjection
         // Retries must encompass the entire future Command, not an individual SaveChanges.
         services.AddDbContext<TournamentDbContext>(options => options.UseSqlServer(connectionString));
         services.AddScoped(typeof(IWriteRepository<>), typeof(WriteRepository<>));
+        services.AddLogging();
+        services.AddScoped<IDomainEventDispatcher, LoggingDomainEventDispatcher>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IIdempotencyStore>(provider => new SqlIdempotencyStore(
             provider.GetRequiredService<TournamentDbContext>(), connectionString));

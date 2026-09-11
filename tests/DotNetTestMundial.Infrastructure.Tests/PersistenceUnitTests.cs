@@ -42,7 +42,7 @@ public class PersistenceUnitTests
     {
         using var context = CreateContext();
         new WriteRepository<Team>(context).Add(Team.Create("Local", "LOC").Value);
-        var unitOfWork = new UnitOfWork(context, new SqlServerPersistenceErrorTranslator());
+        var unitOfWork = SqliteTestDatabase.CreateUnitOfWork(context);
         unitOfWork.Rollback();
         Assert.Empty(context.ChangeTracker.Entries());
         Assert.Equal(System.Data.ConnectionState.Closed, context.Database.GetDbConnection().State);
@@ -55,7 +55,7 @@ public class PersistenceUnitTests
         new WriteRepository<Team>(context).Add(Team.Create("Local", "LOC").Value);
         using var cancellation = new CancellationTokenSource();
         cancellation.Cancel();
-        var unitOfWork = new UnitOfWork(context, new SqlServerPersistenceErrorTranslator());
+        var unitOfWork = SqliteTestDatabase.CreateUnitOfWork(context);
         await Assert.ThrowsAnyAsync<OperationCanceledException>(() => unitOfWork.CommitAsync(cancellation.Token));
         Assert.Empty(context.ChangeTracker.Entries());
         Assert.Equal(System.Data.ConnectionState.Closed, context.Database.GetDbConnection().State);

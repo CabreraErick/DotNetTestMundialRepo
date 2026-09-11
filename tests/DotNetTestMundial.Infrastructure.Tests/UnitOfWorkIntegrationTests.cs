@@ -39,9 +39,45 @@ public class UnitOfWorkIntegrationTests
         Assert.Equal(10, loadedPlayer.JerseyNumber);
         Assert.True(loadedPlayer.IsActive);
         Assert.Empty(loaded.DomainEvents);
-        Assert.Single(team.DomainEvents); // persistence does not publish or discard events yet
+        Assert.Empty(team.DomainEvents); // confirmed events were dispatched and cannot be repeated
     }
 
+    [Fact]
+    public async Task Commit_DispatchesAndClearsEventsAfterDatabaseConfirmation()
+    {
+        await using var database = await SqliteTestDatabase.CreateAsync();
+        await using var context = database.CreateContext();
+        var dispatcher = new RecordingDomainEventDispatcher();
+        var team = Team.Create("Local", "LOC").Value;
+        new WriteRepository<Team>(context).Add(team);
+
+        Assert.Single(team.DomainEvents);
+        Assert.Empty(dispatcher.Events);
+
+        var result = await SqliteTestDatabase.CreateUnitOfWork(context, dispatcher).CommitAsync();
+
+        Assert.True(result.IsSuccess);
+        var domainEvent = Assert.Single(dispatcher.Events);
+        Assert.Equal("TeamCreatedEvent", domainEvent.GetType().Name);
+        Assert.Empty(team.DomainEvents);
+    }
+
+    [Fact]
+    public async Task FailedCommit_DiscardsEventsWithoutDispatchingThem()
+    {
+        await using var database = await SqliteTestDatabase.CreateAsync();
+        await using var context = database.CreateContext();
+        var dispatcher = new RecordingDomainEventDispatcher();
+        var team = Team.Create("Local", "LOC").Value;
+        new WriteRepository<Team>(context).Add(team);
+        new WriteRepository<Player>(context).Add(Player.Create(Guid.NewGuid(), "Missing team", 9).Value);
+
+        var result = await SqliteTestDatabase.CreateUnitOfWork(context, dispatcher).CommitAsync();
+
+        Assert.Equal(PersistenceErrors.ConstraintViolation, result.Error);
+        Assert.Empty(dispatcher.Events);
+        Assert.Empty(team.DomainEvents);
+    }
     [Fact]
     public async Task Commit_SavesResultAndNewGoalsTogetherAndReloadsPrivateCollections()
     {

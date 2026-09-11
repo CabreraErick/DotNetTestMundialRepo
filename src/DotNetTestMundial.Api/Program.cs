@@ -1,6 +1,7 @@
 // Responsabilidad del archivo: Compone el host HTTP, la configuración y el contenedor de dependencias.
 // Relación en el sistema: Conecta controladores de API con handlers de Application e implementaciones de Infrastructure.
 using DotNetTestMundial.Infrastructure;
+using DotNetTestMundial.Api.Observability;
 using DotNetTestMundial.Application.Teams.CreateTeam;
 using DotNetTestMundial.Application.Teams.GetTeams;
 using DotNetTestMundial.Application.Teams.Mutations;
@@ -54,9 +55,13 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+    options.OperationFilter<CorrelationIdHeaderOperationFilter>());
 
 var app = builder.Build();
+
+// Correlation and timing wrap every endpoint, including Swagger and error responses.
+app.UseMiddleware<RequestObservabilityMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

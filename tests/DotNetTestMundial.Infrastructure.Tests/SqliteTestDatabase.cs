@@ -1,5 +1,6 @@
 // Responsabilidad del archivo: Proporciona una base SQLite relacional aislada para pruebas.
 // Relación en el sistema: Infrastructure.Tests la usa para comprobar transacciones sin tocar SQL Server del usuario.
+using DotNetTestMundial.Application.Abstractions.Events;
 using DotNetTestMundial.Application.Abstractions.Persistence;
 using DotNetTestMundial.Domain.Common;
 using DotNetTestMundial.Infrastructure.Persistence;
@@ -29,7 +30,10 @@ internal sealed class SqliteTestDatabase : IAsyncDisposable
         new DbContextOptionsBuilder<TournamentDbContext>().UseSqlite(_connection)
             .AddInterceptors(interceptors).Options);
 
-    public static UnitOfWork CreateUnitOfWork(TournamentDbContext context) => new(context, new SqliteErrorTranslator());
+    public static UnitOfWork CreateUnitOfWork(
+        TournamentDbContext context,
+        IDomainEventDispatcher? dispatcher = null) =>
+        new(context, new SqliteErrorTranslator(), dispatcher ?? new RecordingDomainEventDispatcher());
 
     public ValueTask DisposeAsync() => _connection.DisposeAsync();
 
