@@ -1,6 +1,13 @@
-@DotNetTestMundial.Api_HostAddress = http://localhost:5164
+# Responsabilidad del archivo: Proporciona solicitudes manuales básicas para la API local.
+# Relación en el sistema: Permite comprobar consultas y correlación sin sustituir Swagger ni Postman.
+@host = http://localhost:5164
 
-GET {{DotNetTestMundial.Api_HostAddress}}/weatherforecast/
+GET {{host}}/api/teams?pageNumber=1&pageSize=10&sortBy=name&sortDirection=asc
 Accept: application/json
+X-Correlation-ID: vscode-teams-001
 
 ###
+
+GET {{host}}/api/standings?pageNumber=1&pageSize=10
+Accept: application/json
+X-Correlation-ID: vscode-standings-001

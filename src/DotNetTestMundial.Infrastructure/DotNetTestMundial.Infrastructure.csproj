@@ -1,5 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <!-- Responsabilidad del proyecto: Implementa puertos de Application y referencia Application y Domain. -->
+
   <ItemGroup>
     <ProjectReference Include="..\DotNetTestMundial.Application\DotNetTestMundial.Application.csproj" />
     <ProjectReference Include="..\DotNetTestMundial.Domain\DotNetTestMundial.Domain.csproj" />
@@ -10,5 +12,14 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.1.79" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.19" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.19">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
 
 </Project>

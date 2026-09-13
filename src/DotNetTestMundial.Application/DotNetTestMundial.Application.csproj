@@ -1,5 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <!-- Responsabilidad del proyecto: Orquesta casos de uso y referencia únicamente Domain. -->
+
   <ItemGroup>
     <ProjectReference Include="..\DotNetTestMundial.Domain\DotNetTestMundial.Domain.csproj" />
   </ItemGroup>

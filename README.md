@@ -1,2 +1,141 @@
-# DotNetTestMundialRepo
-Sistema gestor de equipos, torneo de futbol. Prueba Técnica Desarrollador .NET 
+# Sistema Gestor de Fútbol
+
+Sistema web para la gestión de un torneo de fútbol, desarrollado con **.NET 8** y **Next.js**.
+
+La aplicación permite administrar equipos, jugadores, calendario de partidos, goles, resultados, tabla de posiciones y clasificación de goleadores.
+
+## Arquitectura y tecnologías
+
+La solución utiliza las siguientes tecnologías:
+
+* **.NET 8**
+* **ASP.NET Core Web API**
+* **Entity Framework Core** para operaciones de escritura
+* **Dapper** para operaciones de lectura
+* **SQL Server**
+* **Next.js** para el frontend
+
+La organización general de la solución se encuentra documentada en el [diagrama de arquitectura](docs/architecture.md).
+
+La aplicación aplica una separación entre operaciones de lectura y escritura:
+
+* Los **Commands** gestionan las operaciones que modifican el estado del sistema utilizando Entity Framework Core.
+* Las operaciones se confirman mediante el patrón **Unit of Work**.
+* Las **Queries** realizan consultas y generan proyecciones mediante Dapper.
+* Las operaciones de negocio utilizan un patrón **Result** para representar resultados exitosos y errores.
+* La API transforma estos resultados en las respuestas HTTP correspondientes, incluyendo `400 Bad Request`, `404 Not Found` y `409 Conflict`.
+
+## Preparación del entorno local
+
+### Requisitos
+
+Para ejecutar el proyecto se requiere:
+
+* **.NET SDK 8**
+* **SQL Server**
+* **Node.js 20.9 o superior**
+* **pnpm**
+* Herramientas de Entity Framework Core configuradas mediante `dotnet tool restore`
+
+### Configuración de la API
+
+Clone el repositorio y acceda al directorio raíz del proyecto:
+
+```powershell
+git clone <repository-url>
+cd DotNetTestMundialRepo
+```
+
+Configure una cadena de conexión local mediante una variable de entorno.
+
+Ejemplo utilizando autenticación integrada de Windows:
+
+```powershell
+$env:ConnectionStrings__Tournament = 'Server=.;Database=DotNetTestMundial;Trusted_Connection=True;TrustServerCertificate=True'
+```
+
+> La cadena anterior es únicamente un ejemplo para desarrollo local. No almacene credenciales, contraseñas ni cadenas de conexión de producción dentro del repositorio.
+
+Restaure las herramientas y dependencias:
+
+```powershell
+dotnet tool restore
+dotnet restore DotNetTestMundial.sln
+```
+
+Aplique las migraciones de Entity Framework Core:
+
+```powershell
+dotnet ef database update --project src/DotNetTestMundial.Infrastructure --context TournamentDbContext
+```
+
+Ejecute la API:
+
+```powershell
+dotnet run --project src/DotNetTestMundial.Api
+```
+
+Durante el entorno de desarrollo, la documentación interactiva de la API puede consultarse mediante **Swagger** utilizando la URL indicada por ASP.NET Core al iniciar la aplicación.
+
+## Frontend Next.js
+
+Con la API en ejecución, abra otra terminal y acceda al proyecto frontend:
+
+```powershell
+cd frontend
+Copy-Item .env.example .env.local
+pnpm install
+pnpm dev
+```
+
+El frontend utiliza la configuración definida en `.env.local` para comunicarse con la API mediante el proxy configurado en Next.js.
+
+> Los archivos `.env.local` y otros archivos que contengan configuración específica del entorno no deben almacenarse en el repositorio.
+
+Por defecto, el servidor de desarrollo de Next.js utiliza:
+
+```text
+http://localhost:3000
+```
+
+## Pruebas
+
+Para ejecutar la suite completa de pruebas:
+
+```powershell
+dotnet test DotNetTestMundial.sln --configuration Release
+```
+
+La solución incluye pruebas automatizadas para las capas:
+
+* Domain
+* Application
+* Infrastructure
+* API
+
+Las operaciones relacionadas con SQL Server y los endpoints HTTP también pueden verificarse manualmente mediante herramientas de administración de SQL Server y Swagger.
+
+## Documentación
+
+La documentación técnica y funcional se encuentra en el directorio `docs`:
+
+* [Reglas de dominio](docs/domain-rules.md)
+* [Persistencia con EF Core y Unit of Work](docs/persistence.md)
+* [Idempotencia HTTP](docs/idempotency.md)
+* [Consultas paginadas](docs/team-queries.md)
+* [REST de equipos](docs/team-rest.md)
+* [REST de jugadores](docs/player-rest.md)
+* [Calendario de partidos](docs/match-scheduling.md)
+* [Goles y resultados](docs/match-results.md)
+* [Posiciones y goleadores](docs/tournament-queries.md)
+* [Datos iniciales FIFA 2026](docs/world-cup-2026-seed.md)
+* [Observabilidad](docs/observability.md)
+* [Frontend Next.js](docs/frontend.md)
+
+## Próximos entregables
+
+Entre los elementos pendientes o planificados se encuentran:
+
+* Configuración mediante Docker.
+* Colección de pruebas para Postman.
+* Revisión final de documentación y configuración del proyecto.

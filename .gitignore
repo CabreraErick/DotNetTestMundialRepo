@@ -1,0 +1,41 @@
+# Compilación .NET
+**/bin/
+**/obj/
+artifacts/
+TestResults/
+*.trx
+coverage/
+coverage.*
+
+# Visual Studio, VS Code y Rider
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+_ReSharper*/
+*.DotSettings.user
+
+# Frontend Node / Next.js
+node_modules/
+.next/
+out/
+dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Configuración local y secretos
+.env
+.env.*
+!.env.example
+appsettings.*.local.json
+secrets.json
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+Desktop.ini
