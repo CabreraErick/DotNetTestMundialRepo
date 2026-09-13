@@ -15,6 +15,8 @@ El recurso `api/teams` ofrece POST, GET, PUT, PATCH y DELETE. `TeamsController` 
 
 PUT exige `name` y `shortName` válidos y reemplaza ambos valores. PATCH acepta uno o ambos campos; un cuerpo `{}` produce `Teams.PatchEmpty`. DELETE devuelve conflicto si SQL Server impide eliminar un equipo relacionado con jugadores o partidos.
 
+Nombre y abreviatura son únicos. POST, PUT y PATCH consultan primero mediante Dapper y devuelven `Teams.NameAlreadyExists` o `Teams.ShortNameAlreadyExists` con HTTP 409. Los índices únicos `UX_Teams_Name` y `UX_Teams_ShortName` mantienen la garantía ante concurrencia y clientes externos.
+
 ## Flujo de una escritura
 
 1. API construye el Command.

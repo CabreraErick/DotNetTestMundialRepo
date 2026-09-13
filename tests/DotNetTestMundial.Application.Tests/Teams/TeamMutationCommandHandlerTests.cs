@@ -127,8 +127,9 @@ public sealed class TeamMutationCommandHandlerTests
         {
             Reads = new(team);
             UnitOfWork = new(commit ?? Result<int>.Success(1));
-            Update = new(Reads, Writes, UnitOfWork);
-            Patch = new(Reads, Writes, UnitOfWork);
+            var identityValidator = new TeamIdentityValidator(Reads);
+            Update = new(Reads, identityValidator, Writes, UnitOfWork);
+            Patch = new(Reads, identityValidator, Writes, UnitOfWork);
             Delete = new(Reads, Writes, UnitOfWork);
         }
     }
@@ -144,6 +145,11 @@ public sealed class TeamMutationCommandHandlerTests
             FindCalls++;
             return Task.FromResult(Response?.Id == id ? Response : null);
         }
+
+        public Task<TeamIdentityConflict> FindIdentityConflictAsync(
+            string name, string shortName, Guid? excludingId = null,
+            CancellationToken token = default) =>
+            Task.FromResult(new TeamIdentityConflict(false, false));
 
         public Task<PagedResult<TeamListItem>> GetPageAsync(
             TeamPageSpecification specification, CancellationToken token = default) =>

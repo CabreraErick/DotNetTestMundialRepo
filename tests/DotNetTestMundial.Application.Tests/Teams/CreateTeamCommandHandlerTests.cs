@@ -1,7 +1,10 @@
 // Responsabilidad del archivo: Verifica el Command de creación e idempotencia de equipos.
 // Relación en el sistema: Usa dobles de los puertos Application para aislar reglas de orquestación.
 using DotNetTestMundial.Application.Abstractions.Persistence;
+using DotNetTestMundial.Application.Common;
 using DotNetTestMundial.Application.Teams.CreateTeam;
+using DotNetTestMundial.Application.Teams.GetTeams;
+using DotNetTestMundial.Application.Teams.Mutations;
 using DotNetTestMundial.Domain.Common;
 using DotNetTestMundial.Domain.Entities;
 
@@ -80,17 +83,44 @@ public sealed class CreateTeamCommandHandlerTests
         Assert.True(result.Value.IsReplay);
     }
 
+    [Fact]
+    public async Task DuplicateName_ReturnsTypedConflictWithoutWriting()
+    {
+        var f = new Fixture(new TeamIdentityConflict(true, false));
+
+        var result = await f.Handler.HandleAsync(new("Argentina", "NEW", "key-1"));
+
+        Assert.Equal(TeamMutationErrors.NameAlreadyExists, result.Error);
+        Assert.Empty(f.Repository.Added);
+        Assert.Empty(f.Store.Staged);
+        Assert.Equal(0, f.UnitOfWork.CommitCalls);
+    }
+
     private sealed class Fixture
     {
         public RecordingRepository Repository { get; } = new();
         public StubUnitOfWork UnitOfWork { get; }
         public StubStore Store { get; } = new();
         public CreateTeamCommandHandler Handler { get; }
-        public Fixture(Result<int>? commit = null)
+        public Fixture(Result<int>? commit = null) : this(new(false, false), commit) { }
+        public Fixture(TeamIdentityConflict conflict, Result<int>? commit = null)
         {
             UnitOfWork = new(commit ?? Result<int>.Success(2));
-            Handler = new(Repository, UnitOfWork, Store);
+            Handler = new(new TeamIdentityValidator(new IdentityReadRepository(conflict)), Repository, UnitOfWork, Store);
         }
+    }
+
+    private sealed class IdentityReadRepository(TeamIdentityConflict conflict) : ITeamReadRepository
+    {
+        public Task<TeamIdentityConflict> FindIdentityConflictAsync(
+            string name, string shortName, Guid? excludingId = null,
+            CancellationToken token = default) =>
+            Task.FromResult(conflict);
+        public Task<TeamListItem?> FindByIdAsync(Guid id, CancellationToken token = default) =>
+            throw new NotSupportedException();
+        public Task<PagedResult<TeamListItem>> GetPageAsync(
+            TeamPageSpecification specification, CancellationToken token = default) =>
+            throw new NotSupportedException();
     }
 
     private sealed class RecordingRepository : IWriteRepository<Team>

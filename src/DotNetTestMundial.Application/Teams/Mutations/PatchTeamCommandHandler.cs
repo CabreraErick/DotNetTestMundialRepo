@@ -8,7 +8,10 @@ using DotNetTestMundial.Domain.Entities;
 namespace DotNetTestMundial.Application.Teams.Mutations;
 
 public sealed class PatchTeamCommandHandler(
-    ITeamReadRepository reads, IWriteRepository<Team> writes, IUnitOfWork unitOfWork)
+    ITeamReadRepository reads,
+    TeamIdentityValidator identityValidator,
+    IWriteRepository<Team> writes,
+    IUnitOfWork unitOfWork)
     : ICommandHandler<PatchTeamCommand, TeamMutationResult>
 {
     public async Task<Result<TeamMutationResult>> HandleAsync(
@@ -23,6 +26,10 @@ public sealed class PatchTeamCommandHandler(
         var update = team.Update(command.Name ?? snapshot.Name, command.ShortName ?? snapshot.ShortName);
         if (update.IsFailure)
             return Result<TeamMutationResult>.Failure(update.Error!);
+        var uniqueness = await identityValidator.ValidateAsync(
+            team.Name, team.ShortName, team.Id, cancellationToken);
+        if (uniqueness.IsFailure)
+            return Result<TeamMutationResult>.Failure(uniqueness.Error!);
         writes.Update(team);
         var commit = await unitOfWork.CommitAsync(cancellationToken);
         return commit.IsSuccess

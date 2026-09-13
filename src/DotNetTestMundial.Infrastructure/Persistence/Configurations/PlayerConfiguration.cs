@@ -12,9 +12,12 @@ public sealed class PlayerConfiguration : IEntityTypeConfiguration<Player>
     {
         builder.ToTable("Players", table => table.HasCheckConstraint("CK_Players_JerseyNumber", "[JerseyNumber] > 0"));
         builder.ConfigureIdentity();
-        builder.Property(x => x.Name).IsRequired();
+        builder.Property(x => x.Name).HasMaxLength(Player.MaxNameLength).IsRequired();
         // The composite key ensures a goal's stored team really belongs to its scorer.
         builder.HasAlternateKey(x => new { x.Id, x.TeamId });
         builder.HasIndex(x => x.TeamId);
+        builder.HasIndex(x => new { x.TeamId, x.JerseyNumber })
+            .IsUnique()
+            .HasDatabaseName("UX_Players_TeamId_JerseyNumber");
     }
 }

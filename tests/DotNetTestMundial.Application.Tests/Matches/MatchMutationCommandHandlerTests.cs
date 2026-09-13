@@ -156,7 +156,7 @@ public sealed class MatchMutationCommandHandlerTests
         public Fixture(MatchListItem? match)
         {
             Reads = new(match);
-            var validator = new MatchTeamValidator(Teams);
+            var validator = new MatchTeamValidator(Teams, Reads);
             Update = new(Reads, validator, Writes, UnitOfWork);
             Patch = new(Reads, validator, Writes, UnitOfWork);
             Delete = new(Reads, Writes, UnitOfWork);
@@ -173,6 +173,9 @@ public sealed class MatchMutationCommandHandlerTests
             FindCalls++;
             return Task.FromResult(Response?.Id == id ? Response : null);
         }
+        public Task<bool> HasTeamScheduleConflictAsync(
+            Guid homeTeamId, Guid awayTeamId, DateTime scheduledAt,
+            Guid? excludingMatchId = null, CancellationToken token = default) => Task.FromResult(false);
         public Task<PagedResult<MatchListItem>> GetPageAsync(
             MatchPageSpecification specification, CancellationToken token = default) =>
             throw new NotSupportedException();
@@ -184,6 +187,9 @@ public sealed class MatchMutationCommandHandlerTests
 
     private sealed class TeamReadRepository : ITeamReadRepository
     {
+        public Task<TeamIdentityConflict> FindIdentityConflictAsync(
+            string name, string shortName, Guid? excludingId = null,
+            CancellationToken token = default) => throw new NotSupportedException();
         private readonly HashSet<Guid> _ids = [];
         public int FindCalls { get; private set; }
         public void Add(params Guid[] ids) => _ids.UnionWith(ids);

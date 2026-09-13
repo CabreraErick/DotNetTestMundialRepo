@@ -6,7 +6,7 @@ using DotNetTestMundial.Domain.Entities;
 
 namespace DotNetTestMundial.Application.Matches.Mutations;
 
-public sealed class MatchTeamValidator(ITeamReadRepository teams)
+public sealed class MatchTeamValidator(ITeamReadRepository teams, IMatchReadRepository matches)
 {
     public async Task<Result> ValidateAsync(
         Guid homeTeamId, Guid awayTeamId, CancellationToken cancellationToken)
@@ -21,4 +21,15 @@ public sealed class MatchTeamValidator(ITeamReadRepository teams)
             return Result.Failure(MatchMutationErrors.AwayTeamNotFound);
         return Result.Success();
     }
+
+    public async Task<Result> ValidateScheduleAsync(
+        Guid homeTeamId,
+        Guid awayTeamId,
+        DateTime scheduledAt,
+        Guid? excludingMatchId = null,
+        CancellationToken cancellationToken = default) =>
+        await matches.HasTeamScheduleConflictAsync(
+            homeTeamId, awayTeamId, scheduledAt, excludingMatchId, cancellationToken)
+            ? Result.Failure(MatchMutationErrors.ScheduleConflict)
+            : Result.Success();
 }

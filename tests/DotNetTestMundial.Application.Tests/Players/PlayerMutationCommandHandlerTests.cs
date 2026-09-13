@@ -44,7 +44,7 @@ public sealed class PlayerMutationCommandHandlerTests
     {
         var fixture = new Fixture(ActivePlayer());
 
-        var result = await fixture.Patch.HandleAsync(new(fixture.PlayerId, null, 11));
+        var result = await fixture.Patch.HandleAsync(new(fixture.PlayerId, null, 11, null));
 
         Assert.True(result.IsSuccess);
         Assert.Equal("Ana", result.Value.Name);
@@ -57,10 +57,34 @@ public sealed class PlayerMutationCommandHandlerTests
     {
         var fixture = new Fixture(ActivePlayer());
 
-        var result = await fixture.Patch.HandleAsync(new(fixture.PlayerId, null, null));
+        var result = await fixture.Patch.HandleAsync(new(fixture.PlayerId, null, null, null));
 
         Assert.Equal(PlayerMutationErrors.PatchEmpty, result.Error);
         Assert.Equal(0, fixture.Reads.FindCalls);
+    }
+
+    [Fact]
+    public async Task Patch_ActivatesInactivePlayerAndPreservesJersey()
+    {
+        var inactive = ActivePlayer() with { IsActive = false };
+        var fixture = new Fixture(inactive);
+
+        var result = await fixture.Patch.HandleAsync(new(inactive.Id, null, null, true));
+
+        Assert.True(result.IsSuccess);
+        Assert.True(result.Value.IsActive);
+        Assert.Equal(inactive.JerseyNumber, result.Value.JerseyNumber);
+    }
+
+    [Fact]
+    public async Task Update_ReservedJersey_ReturnsTypedConflict()
+    {
+        var fixture = new Fixture(ActivePlayer(), jerseyInUse: true);
+
+        var result = await fixture.Update.HandleAsync(new(fixture.PlayerId, "Ana", 20));
+
+        Assert.Equal(PlayerMutationErrors.JerseyNumberAlreadyAssigned, result.Error);
+        Assert.Empty(fixture.Writes.Updated);
     }
 
     [Fact]
@@ -124,12 +148,13 @@ public sealed class PlayerMutationCommandHandlerTests
         public Guid PlayerId => Reads.Response?.Id ?? Guid.Empty;
         public Guid TeamId => Reads.Response?.TeamId ?? Guid.Empty;
 
-        public Fixture(PlayerListItem? player, Result<int>? commit = null)
+        public Fixture(PlayerListItem? player, Result<int>? commit = null, bool jerseyInUse = false)
         {
-            Reads = new(player);
+            Reads = new(player) { JerseyInUse = jerseyInUse };
             UnitOfWork = new(commit ?? Result<int>.Success(1));
-            Update = new(Reads, Writes, UnitOfWork);
-            Patch = new(Reads, Writes, UnitOfWork);
+            var jerseyValidator = new PlayerJerseyValidator(Reads);
+            Update = new(Reads, jerseyValidator, Writes, UnitOfWork);
+            Patch = new(Reads, jerseyValidator, Writes, UnitOfWork);
             Delete = new(Reads, Writes, UnitOfWork);
         }
     }
@@ -137,6 +162,7 @@ public sealed class PlayerMutationCommandHandlerTests
     private sealed class StubReadRepository(PlayerListItem? response) : IPlayerReadRepository
     {
         public PlayerListItem? Response { get; } = response;
+        public bool JerseyInUse { get; init; }
         public int FindCalls { get; private set; }
         public Task<PlayerListItem?> FindByIdAsync(Guid id, CancellationToken token = default)
         {
@@ -144,6 +170,9 @@ public sealed class PlayerMutationCommandHandlerTests
             FindCalls++;
             return Task.FromResult(Response?.Id == id ? Response : null);
         }
+        public Task<bool> IsJerseyNumberInUseAsync(
+            Guid teamId, int jerseyNumber, Guid? excludingId = null,
+            CancellationToken token = default) => Task.FromResult(JerseyInUse);
         public Task<PagedResult<PlayerListItem>> GetPageAsync(
             PlayerPageSpecification specification, CancellationToken token = default) =>
             throw new NotSupportedException();

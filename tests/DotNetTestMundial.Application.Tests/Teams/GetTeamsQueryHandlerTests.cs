@@ -74,6 +74,9 @@ public sealed class GetTeamsQueryHandlerTests
 
     private sealed class RecordingReadRepository : ITeamReadRepository
     {
+        public Task<TeamIdentityConflict> FindIdentityConflictAsync(
+            string name, string shortName, Guid? excludingId = null,
+            CancellationToken token = default) => throw new NotSupportedException();
         public TeamPageSpecification? Received { get; private set; }
         public PagedResult<TeamListItem> Response { get; } = PagedResult<TeamListItem>.Create(
             [new(Guid.NewGuid(), "Argentina", "ARG")], 2, 5, 6);

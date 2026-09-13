@@ -44,6 +44,11 @@ public sealed class CreateMatchCommandHandler(
             command.HomeTeamId, command.AwayTeamId, cancellationToken);
         if (teamValidation.IsFailure)
             return Result<CreateMatchOutcome>.Failure(teamValidation.Error!);
+        var scheduleValidation = await teamValidator.ValidateScheduleAsync(
+            command.HomeTeamId, command.AwayTeamId, command.ScheduledAt,
+            cancellationToken: cancellationToken);
+        if (scheduleValidation.IsFailure)
+            return Result<CreateMatchOutcome>.Failure(scheduleValidation.Error!);
 
         var match = creation.Value;
         var responseBody = JsonSerializer.Serialize(new { id = match.Id }, JsonOptions);

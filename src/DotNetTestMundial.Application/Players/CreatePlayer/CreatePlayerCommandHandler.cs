@@ -14,6 +14,7 @@ namespace DotNetTestMundial.Application.Players.CreatePlayer;
 
 public sealed class CreatePlayerCommandHandler(
     ITeamReadRepository teams,
+    PlayerJerseyValidator jerseyValidator,
     IWriteRepository<Player> players,
     IUnitOfWork unitOfWork,
     IIdempotencyStore idempotencyStore) : ICommandHandler<CreatePlayerCommand, CreatePlayerOutcome>
@@ -44,6 +45,10 @@ public sealed class CreatePlayerCommandHandler(
             return Result<CreatePlayerOutcome>.Failure(PlayerMutationErrors.TeamNotFound);
 
         var player = creation.Value;
+        var jersey = await jerseyValidator.ValidateAsync(
+            player.TeamId, player.JerseyNumber, cancellationToken: cancellationToken);
+        if (jersey.IsFailure)
+            return Result<CreatePlayerOutcome>.Failure(jersey.Error!);
         var responseBody = JsonSerializer.Serialize(new { id = player.Id }, JsonOptions);
         idempotencyStore.Stage(new StoredIdempotentResponse(
             Operation, key, requestHash, 201, responseBody, player.Id, DateTime.UtcNow));

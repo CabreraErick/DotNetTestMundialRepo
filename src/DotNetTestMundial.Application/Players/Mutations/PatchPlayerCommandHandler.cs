@@ -8,13 +8,16 @@ using DotNetTestMundial.Domain.Entities;
 namespace DotNetTestMundial.Application.Players.Mutations;
 
 public sealed class PatchPlayerCommandHandler(
-    IPlayerReadRepository reads, IWriteRepository<Player> writes, IUnitOfWork unitOfWork)
+    IPlayerReadRepository reads,
+    PlayerJerseyValidator jerseyValidator,
+    IWriteRepository<Player> writes,
+    IUnitOfWork unitOfWork)
     : ICommandHandler<PatchPlayerCommand, PlayerMutationResult>
 {
     public async Task<Result<PlayerMutationResult>> HandleAsync(
         PatchPlayerCommand command, CancellationToken cancellationToken = default)
     {
-        if (command.Name is null && command.JerseyNumber is null)
+        if (command.Name is null && command.JerseyNumber is null && command.IsActive is null)
             return Result<PlayerMutationResult>.Failure(PlayerMutationErrors.PatchEmpty);
         var snapshot = await reads.FindByIdAsync(command.Id, cancellationToken);
         if (snapshot is null)
@@ -26,6 +29,14 @@ public sealed class PatchPlayerCommandHandler(
             command.JerseyNumber ?? snapshot.JerseyNumber);
         if (update.IsFailure)
             return Result<PlayerMutationResult>.Failure(update.Error!);
+        var jersey = await jerseyValidator.ValidateAsync(
+            player.TeamId, player.JerseyNumber, player.Id, cancellationToken);
+        if (jersey.IsFailure)
+            return Result<PlayerMutationResult>.Failure(jersey.Error!);
+        if (command.IsActive is true)
+            player.Activate();
+        else if (command.IsActive is false)
+            player.Deactivate();
         writes.Update(player);
         var commit = await unitOfWork.CommitAsync(cancellationToken);
         return commit.IsSuccess

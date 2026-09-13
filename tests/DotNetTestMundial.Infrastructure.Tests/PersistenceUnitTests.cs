@@ -94,8 +94,21 @@ public class PersistenceUnitTests
         Assert.Contains("CREATE TABLE [Matches]", script);
         Assert.Contains("CREATE TABLE [Goals]", script);
         Assert.Contains("CREATE TABLE [IdempotencyRecords]", script);
+        Assert.Contains("UX_Teams_Name", script);
+        Assert.Contains("UX_Teams_ShortName", script);
+        Assert.Contains("UX_Players_TeamId_JerseyNumber", script);
         Assert.DoesNotContain("DomainEvents", script);
         Assert.Equal(System.Data.ConnectionState.Closed, context.Database.GetDbConnection().State);
+    }
+
+    [Fact]
+    public void MatchModel_DisablesSqlOutputClauseForTriggerCompatibility()
+    {
+        using var context = CreateContext();
+        var match = context.Model.FindEntityType(typeof(Match));
+
+        Assert.NotNull(match);
+        Assert.Equal(false, match.FindAnnotation("SqlServer:UseSqlOutputClause")?.Value);
     }
 
     [Fact]
@@ -103,8 +116,8 @@ public class PersistenceUnitTests
     {
         using var context = CreateContext();
         var migrations = context.Database.GetMigrations().ToArray();
-        Assert.Equal(3, migrations.Length);
-        Assert.EndsWith("_SeedWorldCup2026Tournament", migrations[^1]);
+        Assert.Equal(5, migrations.Length);
+        Assert.EndsWith("_PreventSameDayMatchesAndSupportTriggers", migrations[^1]);
         Assert.False(context.Database.HasPendingModelChanges());
         Assert.Equal(System.Data.ConnectionState.Closed, context.Database.GetDbConnection().State);
     }

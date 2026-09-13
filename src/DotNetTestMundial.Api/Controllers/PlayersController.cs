@@ -20,7 +20,7 @@ public sealed class PlayersController(
 {
     public sealed record CreatePlayerRequest(Guid TeamId, string? Name, int JerseyNumber);
     public sealed record UpdatePlayerRequest(string? Name, int JerseyNumber);
-    public sealed record PatchPlayerRequest(string? Name, int? JerseyNumber);
+    public sealed record PatchPlayerRequest(string? Name, int? JerseyNumber, bool? IsActive);
 
     /// <summary>Registers an active player and persists an idempotent HTTP 201 response.</summary>
     [HttpPost]
@@ -87,7 +87,7 @@ public sealed class PlayersController(
         Guid id, PatchPlayerRequest request, CancellationToken cancellationToken)
     {
         var result = await patchHandler.HandleAsync(
-            new(id, request.Name, request.JerseyNumber), cancellationToken);
+            new(id, request.Name, request.JerseyNumber, request.IsActive), cancellationToken);
         return result.IsSuccess ? Ok(result.Value) : MapError(result.Error!);
     }
 

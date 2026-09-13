@@ -6,6 +6,7 @@ namespace DotNetTestMundial.Domain.Entities;
 
 public sealed class Player : Entity
 {
+    public const int MaxNameLength = 120;
     public Guid TeamId { get; private set; }
     public string Name { get; private set; } = string.Empty;
     public int JerseyNumber { get; private set; }
@@ -45,6 +46,8 @@ public sealed class Player : Entity
             return Result<Player>.Failure(DomainErrors.TeamRequired);
         if (string.IsNullOrWhiteSpace(name))
             return Result<Player>.Failure(DomainErrors.PlayerNameRequired);
+        if (name.Trim().Length > MaxNameLength)
+            return Result<Player>.Failure(DomainErrors.PlayerNameTooLong);
         if (jerseyNumber <= 0)
             return Result<Player>.Failure(DomainErrors.InvalidJerseyNumber);
 
@@ -55,6 +58,8 @@ public sealed class Player : Entity
     {
         if (string.IsNullOrWhiteSpace(name))
             return Result.Failure(DomainErrors.PlayerNameRequired);
+        if (name.Trim().Length > MaxNameLength)
+            return Result.Failure(DomainErrors.PlayerNameTooLong);
         if (jerseyNumber <= 0)
             return Result.Failure(DomainErrors.InvalidJerseyNumber);
 
@@ -66,6 +71,13 @@ public sealed class Player : Entity
     public Result Deactivate()
     {
         IsActive = false;
+        return Result.Success();
+    }
+
+    /// <summary>Restores availability without changing the player's reserved team jersey.</summary>
+    public Result Activate()
+    {
+        IsActive = true;
         return Result.Success();
     }
 }

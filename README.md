@@ -1,10 +1,10 @@
 # Sistema Gestor de Fútbol
 
-API y aplicación de torneo desarrolladas para la prueba técnica .NET. El backend administra equipos, jugadores, calendario, goles, resultados, tabla de posiciones y goleadores.
+API y frontend de torneo desarrollados para la prueba técnica .NET. El sistema administra equipos, jugadores, calendario, goles, resultados, tabla de posiciones y goleadores.
 
 ## Arquitectura y tecnologías
 
-La solución utiliza .NET 8, ASP.NET Core, Entity Framework Core para escrituras, Dapper para lecturas y SQL Server. La separación entre Domain, Application, Infrastructure y API está representada en el [diagrama de arquitectura](docs/architecture.md).
+La solución utiliza .NET 8, ASP.NET Core, Entity Framework Core para escrituras, Dapper para lecturas, SQL Server y un frontend desacoplado en Next.js. La separación está representada en el [diagrama de arquitectura](docs/architecture.md).
 
 Los Commands preparan escrituras con EF Core y las confirman mediante Unit of Work. Las Queries obtienen proyecciones con Dapper. Los resultados de negocio usan Result y la API los traduce a HTTP 400, 404 o 409.
 
@@ -29,13 +29,26 @@ dotnet run --project src/DotNetTestMundial.Api --urls http://localhost:5164
 
 Swagger estará disponible en http://localhost:5164/swagger.
 
+## Frontend Next.js
+
+Con la API activa, ejecute desde otra terminal PowerShell:
+
+~~~powershell
+cd C:\Users\Erick\source\GitHub\DotNetTestMundialRepo-DevCodex\frontend
+Copy-Item .env.example .env.local
+pnpm install
+pnpm dev
+~~~
+
+El frontend estará disponible en http://localhost:3000. Requiere Node.js 20.9 o superior y usa la variable privada `API_BASE_URL` mediante un proxy de Next.js.
+
 ## Pruebas
 
 ~~~powershell
 dotnet test DotNetTestMundial.sln --configuration Release
 ~~~
 
-La solución contiene pruebas de Domain, Application, Infrastructure y API. SQL Server y los métodos HTTP también se verificaron manualmente mediante SSMS y Swagger.
+La solución contiene 189 pruebas de Domain, Application, Infrastructure y API. SQL Server y los métodos HTTP también se verificaron manualmente mediante SSMS y Swagger.
 
 ## Documentación funcional
 
@@ -50,5 +63,6 @@ La solución contiene pruebas de Domain, Application, Infrastructure y API. SQL 
 - [Posiciones y goleadores](docs/tournament-queries.md)
 - [Datos iniciales FIFA 2026](docs/world-cup-2026-seed.md)
 - [Observabilidad](docs/observability.md)
+- [Frontend Next.js](docs/frontend.md)
 
-Quedan como entregables posteriores el frontend Next.js, Docker y la colección Postman.
+Quedan como entregables posteriores Docker, la colección Postman y la revisión final.

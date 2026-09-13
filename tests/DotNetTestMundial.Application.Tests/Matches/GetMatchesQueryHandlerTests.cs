@@ -77,6 +77,10 @@ public sealed class GetMatchesQueryHandlerTests
 
     private sealed class StubRepository(MatchListItem? detail = null) : IMatchReadRepository
     {
+        public Task<bool> HasTeamScheduleConflictAsync(
+            Guid homeTeamId, Guid awayTeamId, DateTime scheduledAt,
+            Guid? excludingMatchId = null, CancellationToken token = default) =>
+            throw new NotSupportedException();
         public MatchPageSpecification? ReceivedPage { get; private set; }
 
         public Task<MatchListItem?> FindByIdAsync(Guid id, CancellationToken token = default)

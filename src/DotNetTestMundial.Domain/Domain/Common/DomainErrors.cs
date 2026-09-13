@@ -6,9 +6,12 @@ public static class DomainErrors
 {
     public static readonly Error TeamNameRequired = new("Team.NameRequired", "Team name is required.");
     public static readonly Error TeamShortNameRequired = new("Team.ShortNameRequired", "Team short name is required.");
+    public static readonly Error TeamNameTooLong = new("Team.NameTooLong", "Team name cannot exceed 100 characters.");
+    public static readonly Error TeamShortNameTooLong = new("Team.ShortNameTooLong", "Team short name cannot exceed 10 characters.");
     public static readonly Error TeamRequired = new("Player.TeamRequired", "Team is required.");
     public static readonly Error PlayerRequired = new("Player.Required", "Player is required.");
     public static readonly Error PlayerNameRequired = new("Player.NameRequired", "Player name is required.");
+    public static readonly Error PlayerNameTooLong = new("Player.NameTooLong", "Player name cannot exceed 120 characters.");
     public static readonly Error InvalidJerseyNumber = new("Player.InvalidJerseyNumber", "Jersey number must be greater than zero.");
     public static readonly Error PlayerTeamMismatch = new("Team.PlayerTeamMismatch", "The player does not belong to this team.");
     public static readonly Error InactivePlayer = new("Goal.InactivePlayer", "An inactive player cannot register a goal.", ErrorType.Conflict);

@@ -36,6 +36,9 @@ public sealed class GetTeamByIdQueryHandlerTests
 
     private sealed class StubReadRepository(TeamListItem? response) : ITeamReadRepository
     {
+        public Task<TeamIdentityConflict> FindIdentityConflictAsync(
+            string name, string shortName, Guid? excludingId = null,
+            CancellationToken token = default) => throw new NotSupportedException();
         public Guid ReceivedId { get; private set; }
         public Task<TeamListItem?> FindByIdAsync(Guid id, CancellationToken token = default)
         {

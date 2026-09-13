@@ -35,6 +35,38 @@ internal sealed class SqlMatchReadRepository(string connectionString) : IMatchRe
             new CommandDefinition(sql, new { id }, cancellationToken: cancellationToken));
     }
 
+    public async Task<bool> HasTeamScheduleConflictAsync(
+        Guid homeTeamId,
+        Guid awayTeamId,
+        DateTime scheduledAt,
+        Guid? excludingMatchId = null,
+        CancellationToken cancellationToken = default)
+    {
+        var dayStart = scheduledAt.Date;
+        var dayEnd = dayStart.AddDays(1);
+        const string sql = """
+            SELECT CAST(CASE WHEN EXISTS (
+                SELECT 1
+                FROM dbo.Matches
+                WHERE ScheduledAt >= @dayStart
+                  AND ScheduledAt < @dayEnd
+                  AND Status <> 3
+                  AND (@excludingMatchId IS NULL OR Id <> @excludingMatchId)
+                  AND (HomeTeamId IN (@homeTeamId, @awayTeamId)
+                       OR AwayTeamId IN (@homeTeamId, @awayTeamId)))
+            THEN 1 ELSE 0 END AS bit);
+            """;
+        await using var connection = new SqlConnection(connectionString);
+        return await connection.ExecuteScalarAsync<bool>(new CommandDefinition(sql, new
+        {
+            homeTeamId,
+            awayTeamId,
+            dayStart,
+            dayEnd,
+            excludingMatchId
+        }, cancellationToken: cancellationToken));
+    }
+
     public async Task<PagedResult<MatchListItem>> GetPageAsync(
         MatchPageSpecification specification,
         CancellationToken cancellationToken = default)

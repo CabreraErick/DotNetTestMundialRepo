@@ -7,6 +7,8 @@ namespace DotNetTestMundial.Domain.Entities;
 
 public sealed class Team : Entity
 {
+    public const int MaxNameLength = 100;
+    public const int MaxShortNameLength = 10;
     private readonly List<Player> _players = new();
 
     public string Name { get; private set; } = string.Empty;
@@ -42,6 +44,10 @@ public sealed class Team : Entity
             return Result<Team>.Failure(DomainErrors.TeamNameRequired);
         if (string.IsNullOrWhiteSpace(shortName))
             return Result<Team>.Failure(DomainErrors.TeamShortNameRequired);
+        if (name.Trim().Length > MaxNameLength)
+            return Result<Team>.Failure(DomainErrors.TeamNameTooLong);
+        if (shortName.Trim().Length > MaxShortNameLength)
+            return Result<Team>.Failure(DomainErrors.TeamShortNameTooLong);
 
         var team = new Team(name.Trim(), shortName.Trim().ToUpperInvariant());
         team.AddDomainEvent(new TeamCreatedEvent(team.Id, team.Name, DateTime.UtcNow));
@@ -54,6 +60,10 @@ public sealed class Team : Entity
             return Result.Failure(DomainErrors.TeamNameRequired);
         if (string.IsNullOrWhiteSpace(shortName))
             return Result.Failure(DomainErrors.TeamShortNameRequired);
+        if (name.Trim().Length > MaxNameLength)
+            return Result.Failure(DomainErrors.TeamNameTooLong);
+        if (shortName.Trim().Length > MaxShortNameLength)
+            return Result.Failure(DomainErrors.TeamShortNameTooLong);
 
         Name = name.Trim();
         ShortName = shortName.Trim().ToUpperInvariant();

@@ -2,6 +2,7 @@
 // Relación en el sistema: Une Team del dominio con IWriteRepository, IIdempotencyStore e IUnitOfWork.
 using DotNetTestMundial.Application.Abstractions.Messaging;
 using DotNetTestMundial.Application.Abstractions.Persistence;
+using DotNetTestMundial.Application.Teams.Mutations;
 using DotNetTestMundial.Domain.Common;
 using DotNetTestMundial.Domain.Entities;
 using System.Security.Cryptography;
@@ -11,6 +12,7 @@ using System.Text.Json;
 namespace DotNetTestMundial.Application.Teams.CreateTeam;
 
 public sealed class CreateTeamCommandHandler(
+    TeamIdentityValidator identityValidator,
     IWriteRepository<Team> teams,
     IUnitOfWork unitOfWork,
     IIdempotencyStore idempotencyStore) : ICommandHandler<CreateTeamCommand, CreateTeamOutcome>
@@ -40,6 +42,10 @@ public sealed class CreateTeamCommandHandler(
             return ReplayOrConflict(stored, requestHash);
 
         var team = creation.Value;
+        var uniqueness = await identityValidator.ValidateAsync(
+            team.Name, team.ShortName, cancellationToken: cancellationToken);
+        if (uniqueness.IsFailure)
+            return Result<CreateTeamOutcome>.Failure(uniqueness.Error!);
         var responseBody = JsonSerializer.Serialize(new { id = team.Id }, JsonOptions);
         idempotencyStore.Stage(new StoredIdempotentResponse(
             Operation, key, requestHash, 201, responseBody, team.Id, DateTime.UtcNow));

@@ -22,6 +22,27 @@ internal sealed class SqlTeamReadRepository(string connectionString) : ITeamRead
             new CommandDefinition(sql, new { id }, cancellationToken: cancellationToken));
     }
 
+    public async Task<TeamIdentityConflict> FindIdentityConflictAsync(
+        string name,
+        string shortName,
+        Guid? excludingId = null,
+        CancellationToken cancellationToken = default)
+    {
+        const string sql = """
+            SELECT CAST(CASE WHEN EXISTS (
+                       SELECT 1 FROM dbo.Teams
+                       WHERE Name = @name AND (@excludingId IS NULL OR Id <> @excludingId))
+                   THEN 1 ELSE 0 END AS bit) AS NameExists,
+                   CAST(CASE WHEN EXISTS (
+                       SELECT 1 FROM dbo.Teams
+                       WHERE ShortName = @shortName AND (@excludingId IS NULL OR Id <> @excludingId))
+                   THEN 1 ELSE 0 END AS bit) AS ShortNameExists;
+            """;
+        await using var connection = new SqlConnection(connectionString);
+        return await connection.QuerySingleAsync<TeamIdentityConflict>(new CommandDefinition(
+            sql, new { name, shortName, excludingId }, cancellationToken: cancellationToken));
+    }
+
     public async Task<PagedResult<TeamListItem>> GetPageAsync(
         TeamPageSpecification specification,
         CancellationToken cancellationToken = default)

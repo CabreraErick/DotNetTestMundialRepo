@@ -8,7 +8,10 @@ using DotNetTestMundial.Domain.Entities;
 namespace DotNetTestMundial.Application.Players.Mutations;
 
 public sealed class UpdatePlayerCommandHandler(
-    IPlayerReadRepository reads, IWriteRepository<Player> writes, IUnitOfWork unitOfWork)
+    IPlayerReadRepository reads,
+    PlayerJerseyValidator jerseyValidator,
+    IWriteRepository<Player> writes,
+    IUnitOfWork unitOfWork)
     : ICommandHandler<UpdatePlayerCommand, PlayerMutationResult>
 {
     public async Task<Result<PlayerMutationResult>> HandleAsync(
@@ -22,6 +25,10 @@ public sealed class UpdatePlayerCommandHandler(
         var update = player.Update(command.Name, command.JerseyNumber);
         if (update.IsFailure)
             return Result<PlayerMutationResult>.Failure(update.Error!);
+        var jersey = await jerseyValidator.ValidateAsync(
+            player.TeamId, player.JerseyNumber, player.Id, cancellationToken);
+        if (jersey.IsFailure)
+            return Result<PlayerMutationResult>.Failure(jersey.Error!);
         writes.Update(player);
         var commit = await unitOfWork.CommitAsync(cancellationToken);
         return commit.IsSuccess

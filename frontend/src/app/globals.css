@@ -1,0 +1,124 @@
+/* Responsabilidad: define la apariencia global, accesible y adaptable de la aplicación. */
+/* Relación: presenta de forma consistente formularios y proyecciones recibidas de la API. */
+:root {
+  --background: #f3f6f2;
+  --surface: #ffffff;
+  --surface-muted: #edf3ee;
+  --foreground: #172019;
+  --muted: #5c6b60;
+  --border: #d7e0d8;
+  --primary: #176b3a;
+  --primary-dark: #0e4e29;
+  --accent: #d7a625;
+  --shadow: 0 14px 38px rgba(24, 47, 31, 0.08);
+}
+
+* { box-sizing: border-box; }
+html { min-height: 100%; background: var(--background); }
+body {
+  min-height: 100vh;
+  margin: 0;
+  color: var(--foreground);
+  background: radial-gradient(circle at 95% 0%, rgba(215, 166, 37, 0.12), transparent 24rem), var(--background);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+a { color: inherit; text-decoration: none; }
+button, input, select { font: inherit; }
+button { cursor: pointer; }
+button:disabled { cursor: not-allowed; opacity: 0.55; }
+
+.shell { width: min(1180px, calc(100% - 2rem)); margin-inline: auto; }
+.pageContent { min-height: calc(100vh - 150px); padding-block: 3rem 4rem; }
+.siteHeader { position: sticky; top: 0; z-index: 10; border-bottom: 1px solid rgba(255,255,255,.14); background: rgba(13, 13, 13, 0.97); color: white; backdrop-filter: blur(12px); }
+.headerContent { min-height: 74px; display: flex; align-items: center; justify-content: space-between; gap: 2rem; }
+.brand { display: flex; align-items: center; gap: .75rem; }
+.brandMark { display: grid; place-items: center; width: 42px; height: 42px; border: 2px solid rgba(255,255,255,.7); border-radius: 50%; color: #193522; background: var(--accent); font-weight: 900; }
+.brand strong, .brand small { display: block; }
+.brand small { color: rgba(255,255,255,.72); font-size: .72rem; }
+nav { display: flex; align-items: center; gap: .25rem; flex-wrap: wrap; }
+nav a { padding: .55rem .7rem; border-radius: 7px; color: rgba(255,255,255,.82); font-size: .91rem; }
+nav a:hover, nav a:focus-visible { color: white; background: rgba(255,255,255,.11); }
+.siteFooter { padding: 1.25rem 0; border-top: 1px solid var(--border); color: var(--muted); font-size: .85rem; }
+
+.hero { max-width: 800px; padding: 3.5rem 0 4.5rem; }
+.hero h1 { max-width: 720px; margin: .25rem 0 1rem; font-size: clamp(2.25rem, 6vw, 4.5rem); line-height: .98; letter-spacing: -.055em; }
+.hero p:not(.eyebrow) { max-width: 650px; margin: 0 0 1.75rem; color: var(--muted); font-size: 1.08rem; }
+.eyebrow { margin: 0 0 .35rem; color: var(--primary); font-size: .76rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+.pageHeader { display: flex; align-items: flex-end; justify-content: space-between; gap: 2rem; margin-bottom: 2rem; }
+.pageHeader h1 { margin: 0; font-size: clamp(2rem, 4vw, 3.25rem); line-height: 1.05; letter-spacing: -.035em; }
+.pageHeader p:not(.eyebrow) { max-width: 700px; margin: .65rem 0 0; color: var(--muted); }
+.pageActions { display: flex; align-items: center; gap: .75rem; }
+.sectionHeading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.2rem; }
+.sectionHeading h2, .formCard h2 { margin: 0; font-size: 1.2rem; }
+
+.card { border: 1px solid var(--border); border-radius: 14px; background: var(--surface); box-shadow: var(--shadow); }
+.cardGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1rem; }
+.moduleCard { min-height: 175px; padding: 1.35rem; display: flex; flex-direction: column; transition: transform .18s ease, border-color .18s ease; }
+.moduleCard:hover { transform: translateY(-3px); border-color: #9db9a5; }
+.moduleCard h3 { margin: 0 0 .45rem; }
+.moduleCard p { margin: 0; color: var(--muted); }
+.moduleCard span { margin-top: auto; color: var(--primary); font-weight: 750; }
+.splitLayout { display: grid; grid-template-columns: minmax(245px, 320px) minmax(0, 1fr); gap: 1.25rem; align-items: start; }
+.detailGrid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(280px, .7fr); gap: 1.25rem; align-items: start; }
+.formStack { display: grid; gap: 1.25rem; }
+.formCard, .dataCard { padding: 1.35rem; }
+.formCard { position: sticky; top: 96px; }
+
+form { display: grid; gap: 1rem; margin-top: 1.1rem; }
+label { display: grid; gap: .36rem; color: #34463a; font-size: .82rem; font-weight: 720; }
+input, select { width: 100%; min-height: 42px; padding: .62rem .7rem; border: 1px solid #bfcac1; border-radius: 8px; outline: none; color: var(--foreground); background: white; }
+input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(23, 107, 58, .13); }
+.filters { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); align-items: end; gap: .75rem; margin: 0 0 1.15rem; padding: 1rem; border-radius: 10px; background: var(--surface-muted); }
+.scoreInputs { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+.helper { margin: .5rem 0 0; color: var(--muted); font-size: .84rem; }
+
+.button { display: inline-flex; min-height: 40px; align-items: center; justify-content: center; padding: .58rem .85rem; border: 1px solid transparent; border-radius: 8px; font-weight: 760; }
+.button.primary { color: white; background: var(--primary); }
+.button.primary:hover { background: var(--primary-dark); }
+.button.secondary { border-color: #b8c5ba; color: #263b2c; background: white; }
+.button.secondary:hover { border-color: var(--primary); color: var(--primary); }
+.button.danger { border-color: #b42318; color: #b42318; background: white; }
+.button.danger:hover { color: white; background: #b42318; }
+.textLink { color: var(--primary); font-weight: 750; text-decoration: underline; text-underline-offset: 3px; }
+.rowActions { display: flex; align-items: center; gap: .45rem; flex-wrap: wrap; }
+.rowActions .button { min-height: 34px; padding: .4rem .62rem; font-size: .78rem; }
+
+.tableScroll { width: 100%; overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: .91rem; }
+th { padding: .7rem .65rem; border-bottom: 2px solid var(--border); color: var(--muted); font-size: .73rem; letter-spacing: .05em; text-align: left; text-transform: uppercase; white-space: nowrap; }
+td { padding: .86rem .65rem; border-bottom: 1px solid #e5ebe6; vertical-align: middle; }
+tbody tr:hover { background: #fafcfa; }
+.tableSubtext { display: block; color: var(--muted); }
+.score { color: var(--primary); font-size: 1.7rem; }
+.goalCount { display: inline-grid; place-items: center; min-width: 34px; height: 34px; border-radius: 50%; color: #2f2608; background: #f1d16f; font-weight: 900; }
+
+.pagination { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-top: 1.2rem; color: var(--muted); font-size: .85rem; }
+.pagination > div { display: flex; align-items: center; gap: .75rem; }
+.alert { display: grid; gap: .2rem; margin-block: .9rem; padding: .85rem 1rem; border-radius: 9px; font-size: .88rem; }
+.alert.error { border: 1px solid #e2aaaa; color: #762020; background: #fff1f1; }
+.alert.success { border: 1px solid #a8d3b6; color: #165c31; background: #effaf2; }
+.state { padding: 2.5rem 1rem; color: var(--muted); text-align: center; }
+.badge { display: inline-flex; align-items: center; padding: .28rem .55rem; border-radius: 999px; font-size: .72rem; font-weight: 800; white-space: nowrap; }
+.badge.scheduled { color: #704c05; background: #fff2c7; }
+.badge.played, .badge.active { color: #155b30; background: #dff3e5; }
+.badge.cancelled, .badge.inactive { color: #7e2929; background: #f8dddd; }
+
+@media (max-width: 900px) {
+  .headerContent { padding-block: .75rem; align-items: flex-start; flex-direction: column; gap: .6rem; }
+  .siteHeader { position: static; }
+  nav { width: 100%; overflow-x: auto; flex-wrap: nowrap; }
+  nav a { white-space: nowrap; }
+  .splitLayout, .detailGrid { grid-template-columns: 1fr; }
+  .formCard { position: static; }
+}
+
+@media (max-width: 620px) {
+  .shell { width: min(100% - 1rem, 1180px); }
+  .pageContent { padding-block: 2rem 3rem; }
+  .hero { padding-block: 2rem 3rem; }
+  .pageHeader { align-items: flex-start; flex-direction: column; }
+  .pagination { align-items: flex-start; flex-direction: column; }
+  .pagination > div { width: 100%; justify-content: space-between; }
+  .formCard, .dataCard { padding: 1rem; }
+}

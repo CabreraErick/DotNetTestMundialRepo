@@ -10,6 +10,14 @@ public interface IMatchReadRepository
 {
     Task<MatchListItem?> FindByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
+    /// <summary>Detects whether either participant already has a non-cancelled match on the scheduled day.</summary>
+    Task<bool> HasTeamScheduleConflictAsync(
+        Guid homeTeamId,
+        Guid awayTeamId,
+        DateTime scheduledAt,
+        Guid? excludingMatchId = null,
+        CancellationToken cancellationToken = default);
+
     Task<PagedResult<MatchListItem>> GetPageAsync(
         MatchPageSpecification specification,
         CancellationToken cancellationToken = default);

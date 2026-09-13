@@ -3,7 +3,9 @@
 using DotNetTestMundial.Application.Abstractions.Persistence;
 using DotNetTestMundial.Application.Common;
 using DotNetTestMundial.Application.Matches.CreateMatch;
+using DotNetTestMundial.Application.Matches.GetMatches;
 using DotNetTestMundial.Application.Matches.Mutations;
+using DotNetTestMundial.Application.Matches.Results;
 using DotNetTestMundial.Application.Teams.CreateTeam;
 using DotNetTestMundial.Application.Teams.GetTeams;
 using DotNetTestMundial.Domain.Common;
@@ -94,6 +96,18 @@ public sealed class CreateMatchCommandHandlerTests
         Assert.True(result.Value.IsReplay);
     }
 
+    [Fact]
+    public async Task TeamAlreadyScheduledOnSameDay_ReturnsTypedConflict()
+    {
+        var fixture = new Fixture(scheduleConflict: true);
+
+        var result = await fixture.Handler.HandleAsync(fixture.Command("match-key-1"));
+
+        Assert.Equal(MatchMutationErrors.ScheduleConflict, result.Error);
+        Assert.Empty(fixture.Writes.Added);
+        Assert.Equal(0, fixture.UnitOfWork.CommitCalls);
+    }
+
     private sealed class Fixture
     {
         public Guid HomeTeamId { get; } = Guid.NewGuid();
@@ -105,19 +119,33 @@ public sealed class CreateMatchCommandHandlerTests
         public StubStore Store { get; } = new();
         public CreateMatchCommandHandler Handler { get; }
 
-        public Fixture(bool includeAway = true, Result<int>? commit = null)
+        public Fixture(bool includeAway = true, Result<int>? commit = null, bool scheduleConflict = false)
         {
             Teams = new(HomeTeamId, includeAway ? AwayTeamId : null);
             UnitOfWork = new(commit ?? Result<int>.Success(2));
-            Handler = new(new MatchTeamValidator(Teams), Writes, UnitOfWork, Store);
+            Handler = new(new MatchTeamValidator(Teams, new MatchReadRepository(scheduleConflict)), Writes, UnitOfWork, Store);
         }
 
         public CreateMatchCommand Command(string key) =>
             new(HomeTeamId, AwayTeamId, Date, key);
     }
 
+    private sealed class MatchReadRepository(bool scheduleConflict) : IMatchReadRepository
+    {
+        public Task<bool> HasTeamScheduleConflictAsync(
+            Guid homeTeamId, Guid awayTeamId, DateTime scheduledAt,
+            Guid? excludingMatchId = null, CancellationToken token = default) => Task.FromResult(scheduleConflict);
+        public Task<MatchListItem?> FindByIdAsync(Guid id, CancellationToken token = default) => throw new NotSupportedException();
+        public Task<PagedResult<MatchListItem>> GetPageAsync(MatchPageSpecification specification, CancellationToken token = default) => throw new NotSupportedException();
+        public Task<IReadOnlyList<GoalListItem>> GetGoalsAsync(Guid matchId, CancellationToken token = default) => throw new NotSupportedException();
+        public Task<MatchStateSnapshot?> FindStateByIdAsync(Guid matchId, CancellationToken token = default) => throw new NotSupportedException();
+    }
+
     private sealed class TeamReadRepository(Guid homeId, Guid? awayId) : ITeamReadRepository
     {
+        public Task<TeamIdentityConflict> FindIdentityConflictAsync(
+            string name, string shortName, Guid? excludingId = null,
+            CancellationToken token = default) => throw new NotSupportedException();
         public int FindCalls { get; private set; }
         public Task<TeamListItem?> FindByIdAsync(Guid id, CancellationToken token = default)
         {

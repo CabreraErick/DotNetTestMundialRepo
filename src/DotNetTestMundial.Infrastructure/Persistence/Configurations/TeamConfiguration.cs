@@ -12,8 +12,10 @@ public sealed class TeamConfiguration : IEntityTypeConfiguration<Team>
     {
         builder.ToTable("Teams");
         builder.ConfigureIdentity();
-        builder.Property(x => x.Name).IsRequired();
-        builder.Property(x => x.ShortName).IsRequired();
+        builder.Property(x => x.Name).HasMaxLength(Team.MaxNameLength).IsRequired();
+        builder.Property(x => x.ShortName).HasMaxLength(Team.MaxShortNameLength).IsRequired();
+        builder.HasIndex(x => x.Name).IsUnique().HasDatabaseName("UX_Teams_Name");
+        builder.HasIndex(x => x.ShortName).IsUnique().HasDatabaseName("UX_Teams_ShortName");
         builder.HasMany(x => x.Players).WithOne().HasForeignKey(x => x.TeamId)
             .OnDelete(DeleteBehavior.Restrict);
         builder.Navigation(x => x.Players).HasField("_players").UsePropertyAccessMode(PropertyAccessMode.Field);

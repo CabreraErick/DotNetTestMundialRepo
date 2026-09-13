@@ -188,6 +188,10 @@ public sealed class MatchResultCommandHandlerTests
 
     private sealed class MatchReadRepository(MatchListItem match) : IMatchReadRepository
     {
+        public Task<bool> HasTeamScheduleConflictAsync(
+            Guid homeTeamId, Guid awayTeamId, DateTime scheduledAt,
+            Guid? excludingMatchId = null, CancellationToken token = default) =>
+            throw new NotSupportedException();
         public List<GoalListItem> Goals { get; } = [];
         public Task<MatchListItem?> FindByIdAsync(Guid id, CancellationToken token = default) =>
             Task.FromResult<MatchListItem?>(id == match.Id ? match : null);
@@ -206,6 +210,9 @@ public sealed class MatchResultCommandHandlerTests
 
     private sealed class PlayerReadRepository(PlayerListItem? player) : IPlayerReadRepository
     {
+        public Task<bool> IsJerseyNumberInUseAsync(
+            Guid teamId, int jerseyNumber, Guid? excludingId = null,
+            CancellationToken token = default) => throw new NotSupportedException();
         public Task<PlayerListItem?> FindByIdAsync(Guid id, CancellationToken token = default) =>
             Task.FromResult<PlayerListItem?>(id == player?.Id ? player : null);
         public Task<PagedResult<PlayerListItem>> GetPageAsync(

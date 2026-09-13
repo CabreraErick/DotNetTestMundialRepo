@@ -71,6 +71,9 @@ public sealed class GetPlayersQueryHandlerTests
 
     private sealed class StubRepository(PlayerListItem? detail = null) : IPlayerReadRepository
     {
+        public Task<bool> IsJerseyNumberInUseAsync(
+            Guid teamId, int jerseyNumber, Guid? excludingId = null,
+            CancellationToken token = default) => throw new NotSupportedException();
         public PlayerPageSpecification? ReceivedPage { get; private set; }
         public Task<PlayerListItem?> FindByIdAsync(Guid id, CancellationToken token = default)
         {

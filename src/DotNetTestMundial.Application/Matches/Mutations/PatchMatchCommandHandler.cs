@@ -38,6 +38,10 @@ public sealed class PatchMatchCommandHandler(
             homeTeamId, awayTeamId, cancellationToken);
         if (existence.IsFailure)
             return Result<MatchMutationResult>.Failure(existence.Error!);
+        var schedule = await teamValidator.ValidateScheduleAsync(
+            homeTeamId, awayTeamId, match.ScheduledAt, command.Id, cancellationToken);
+        if (schedule.IsFailure)
+            return Result<MatchMutationResult>.Failure(schedule.Error!);
 
         writes.Update(match);
         var commit = await unitOfWork.CommitAsync(cancellationToken);

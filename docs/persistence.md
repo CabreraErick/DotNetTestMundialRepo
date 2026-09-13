@@ -15,11 +15,15 @@ La solución usa EF Core 9.0.19 con SQL Server y destino .NET 8. SQLite se utili
 
 Las migraciones crean Teams, Players, Matches, Goals e IdempotencyRecords. El seed agrega cuatro selecciones, veinte jugadores, seis partidos y tres resultados demostrativos.
 
-Las relaciones y restricciones protegen dorsales, minutos, marcadores, pertenencia de jugadores y referencias entre equipos, partidos y goles. Los eventos de dominio no se almacenan como columnas.
+Las relaciones y restricciones protegen nombres y abreviaturas únicas, dorsales reservados por equipo, días sin partidos superpuestos para un mismo equipo, minutos, marcadores, pertenencia de jugadores y referencias entre equipos, partidos y goles. Los eventos de dominio no se almacenan como columnas.
+
+`EnforceQaBusinessRules` agrega índices únicos para `Teams.Name`, `Teams.ShortName` y `(Players.TeamId, Players.JerseyNumber)`. `PreventSameDayMatchesAndSupportTriggers` actualiza el trigger para bloquear cruces local/visitante durante todo el día y omitir partidos cancelados.
 
 ## Escrituras y transacciones
 
 Los repositorios preparan Add, Update y Remove sin confirmar. Cada Command llama una sola vez a IUnitOfWork.CommitAsync.
+
+`Matches` desactiva `UseSqlOutputClause` porque SQL Server no admite el `OUTPUT` sin `INTO` que EF Core usa por defecto cuando la tabla tiene un trigger habilitado. Así, cancelaciones y registro de resultados utilizan instrucciones compatibles sin abandonar EF Core ni Unit of Work.
 
 La secuencia de commit es:
 

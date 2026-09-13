@@ -25,12 +25,14 @@ builder.Services.AddInfrastructure(connectionString);
 // API resolves Application orchestrators; each handler depends on ports rather than on
 // controllers or SQL implementations, preserving the direction of Clean Architecture.
 builder.Services.AddScoped<CreateTeamCommandHandler>();
+builder.Services.AddScoped<TeamIdentityValidator>();
 builder.Services.AddScoped<GetTeamsQueryHandler>();
 builder.Services.AddScoped<GetTeamByIdQueryHandler>();
 builder.Services.AddScoped<UpdateTeamCommandHandler>();
 builder.Services.AddScoped<PatchTeamCommandHandler>();
 builder.Services.AddScoped<DeleteTeamCommandHandler>();
 builder.Services.AddScoped<CreatePlayerCommandHandler>();
+builder.Services.AddScoped<PlayerJerseyValidator>();
 builder.Services.AddScoped<GetPlayersQueryHandler>();
 builder.Services.AddScoped<GetPlayerByIdQueryHandler>();
 builder.Services.AddScoped<UpdatePlayerCommandHandler>();

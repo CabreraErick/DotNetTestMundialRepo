@@ -97,6 +97,19 @@ public sealed class CreatePlayerCommandHandlerTests
         Assert.True(result.Value.IsReplay);
     }
 
+    [Fact]
+    public async Task ReservedJersey_ReturnsConflictEvenWhenPreviousPlayerMayBeInactive()
+    {
+        var fixture = new Fixture(teamExists: true, jerseyInUse: true);
+
+        var result = await fixture.Handler.HandleAsync(
+            new(fixture.TeamId, "Nueva jugadora", 10, "player-key-1"));
+
+        Assert.Equal(PlayerMutationErrors.JerseyNumberAlreadyAssigned, result.Error);
+        Assert.Empty(fixture.Writes.Added);
+        Assert.Equal(0, fixture.UnitOfWork.CommitCalls);
+    }
+
     private sealed class Fixture
     {
         public Guid TeamId { get; } = Guid.NewGuid();
@@ -106,16 +119,31 @@ public sealed class CreatePlayerCommandHandlerTests
         public StubStore Store { get; } = new();
         public CreatePlayerCommandHandler Handler { get; }
 
-        public Fixture(bool teamExists, Result<int>? commit = null)
+        public Fixture(bool teamExists, Result<int>? commit = null, bool jerseyInUse = false)
         {
             Teams = new(teamExists ? new(TeamId, "Argentina", "ARG") : null);
             UnitOfWork = new(commit ?? Result<int>.Success(2));
-            Handler = new(Teams, Writes, UnitOfWork, Store);
+            Handler = new(Teams, new PlayerJerseyValidator(new JerseyReadRepository(jerseyInUse)), Writes, UnitOfWork, Store);
         }
+    }
+
+    private sealed class JerseyReadRepository(bool jerseyInUse) : IPlayerReadRepository
+    {
+        public Task<bool> IsJerseyNumberInUseAsync(
+            Guid teamId, int jerseyNumber, Guid? excludingId = null,
+            CancellationToken token = default) => Task.FromResult(jerseyInUse);
+        public Task<PlayerListItem?> FindByIdAsync(Guid id, CancellationToken token = default) =>
+            throw new NotSupportedException();
+        public Task<PagedResult<PlayerListItem>> GetPageAsync(
+            PlayerPageSpecification specification, CancellationToken token = default) =>
+            throw new NotSupportedException();
     }
 
     private sealed class TeamReadRepository(TeamListItem? team) : ITeamReadRepository
     {
+        public Task<TeamIdentityConflict> FindIdentityConflictAsync(
+            string name, string shortName, Guid? excludingId = null,
+            CancellationToken token = default) => throw new NotSupportedException();
         public Task<TeamListItem?> FindByIdAsync(Guid id, CancellationToken token = default)
         {
             token.ThrowIfCancellationRequested();

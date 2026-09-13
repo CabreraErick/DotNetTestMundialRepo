@@ -92,6 +92,8 @@ namespace DotNetTestMundial.Infrastructure.Persistence.Migrations
 
                             t.HasCheckConstraint("CK_Matches_StateAndScore", "([Status] = 2 AND [HomeScore] IS NOT NULL AND [AwayScore] IS NOT NULL AND [HomeScore] >= 0 AND [AwayScore] >= 0) OR ([Status] IN (1, 3) AND [HomeScore] IS NULL AND [AwayScore] IS NULL)");
                         });
+
+                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
 
             modelBuilder.Entity("DotNetTestMundial.Domain.Entities.Player", b =>
@@ -107,7 +109,8 @@ namespace DotNetTestMundial.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
 
                     b.Property<Guid>("TeamId")
                         .HasColumnType("uniqueidentifier");
@@ -115,6 +118,10 @@ namespace DotNetTestMundial.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("TeamId");
+
+                    b.HasIndex("TeamId", "JerseyNumber")
+                        .IsUnique()
+                        .HasDatabaseName("UX_Players_TeamId_JerseyNumber");
 
                     b.ToTable("Players", null, t =>
                         {
@@ -129,13 +136,23 @@ namespace DotNetTestMundial.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("ShortName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("UX_Teams_Name");
+
+                    b.HasIndex("ShortName")
+                        .IsUnique()
+                        .HasDatabaseName("UX_Teams_ShortName");
 
                     b.ToTable("Teams", (string)null);
                 });

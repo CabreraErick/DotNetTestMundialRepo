@@ -23,6 +23,26 @@ internal sealed class SqlPlayerReadRepository(string connectionString) : IPlayer
             new CommandDefinition(sql, new { id }, cancellationToken: cancellationToken));
     }
 
+    public async Task<bool> IsJerseyNumberInUseAsync(
+        Guid teamId,
+        int jerseyNumber,
+        Guid? excludingId = null,
+        CancellationToken cancellationToken = default)
+    {
+        const string sql = """
+            SELECT CAST(CASE WHEN EXISTS (
+                SELECT 1
+                FROM dbo.Players
+                WHERE TeamId = @teamId
+                  AND JerseyNumber = @jerseyNumber
+                  AND (@excludingId IS NULL OR Id <> @excludingId))
+            THEN 1 ELSE 0 END AS bit);
+            """;
+        await using var connection = new SqlConnection(connectionString);
+        return await connection.ExecuteScalarAsync<bool>(new CommandDefinition(
+            sql, new { teamId, jerseyNumber, excludingId }, cancellationToken: cancellationToken));
+    }
+
     public async Task<PagedResult<PlayerListItem>> GetPageAsync(
         PlayerPageSpecification specification,
         CancellationToken cancellationToken = default)

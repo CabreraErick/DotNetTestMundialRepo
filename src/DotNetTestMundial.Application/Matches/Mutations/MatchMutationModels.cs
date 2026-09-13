@@ -31,4 +31,8 @@ public static class MatchMutationErrors
         "Matches.PatchEmpty", "Patch must provide homeTeamId, awayTeamId or scheduledAt.", ErrorType.Validation);
     public static readonly Error TeamsLockedByGoals = new(
         "Matches.TeamsLockedByGoals", "Teams cannot change after goals have been registered.", ErrorType.Conflict);
+    public static readonly Error ScheduleConflict = new(
+        "Matches.ScheduleConflict",
+        "One of the teams already has a non-cancelled match scheduled on this date.",
+        ErrorType.Conflict);
 }

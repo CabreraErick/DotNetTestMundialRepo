@@ -81,4 +81,15 @@ public class PlayerTests
         Assert.True(player.Deactivate().IsSuccess);
         Assert.False(player.IsActive);
     }
+
+    [Fact]
+    public void Activate_RestoresAvailabilityWithoutChangingReservedJersey()
+    {
+        var player = Player.Create(Guid.NewGuid(), "Ana", 10).Value;
+        player.Deactivate();
+
+        Assert.True(player.Activate().IsSuccess);
+        Assert.True(player.IsActive);
+        Assert.Equal(10, player.JerseyNumber);
+    }
 }

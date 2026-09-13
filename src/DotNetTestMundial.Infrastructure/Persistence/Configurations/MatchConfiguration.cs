@@ -12,6 +12,8 @@ public sealed class MatchConfiguration : IEntityTypeConfiguration<Match>
     {
         builder.ToTable("Matches", table =>
         {
+            // SQL Server no permite el OUTPUT de EF Core sobre tablas con triggers habilitados.
+            table.UseSqlOutputClause(false);
             table.HasCheckConstraint("CK_Matches_DifferentTeams", "[HomeTeamId] <> [AwayTeamId]");
             table.HasCheckConstraint("CK_Matches_StateAndScore",
                 "([Status] = 2 AND [HomeScore] IS NOT NULL AND [AwayScore] IS NOT NULL AND [HomeScore] >= 0 AND [AwayScore] >= 0) OR " +

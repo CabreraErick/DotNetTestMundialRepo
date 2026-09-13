@@ -15,4 +15,8 @@ public static class TeamMutationErrors
         "Teams.NotFound", "The requested team does not exist.", ErrorType.NotFound);
     public static readonly Error PatchEmpty = new(
         "Teams.PatchEmpty", "Patch must provide name or shortName.", ErrorType.Validation);
+    public static readonly Error NameAlreadyExists = new(
+        "Teams.NameAlreadyExists", "A team with this name already exists.", ErrorType.Conflict);
+    public static readonly Error ShortNameAlreadyExists = new(
+        "Teams.ShortNameAlreadyExists", "A team with this short name already exists.", ErrorType.Conflict);
 }
