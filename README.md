@@ -33,8 +33,8 @@ Para ejecutar el proyecto se requiere:
 
 * **.NET SDK 8**
 * **SQL Server**
-* **Node.js 20.9 o superior**
-* **pnpm**
+* **Node.js 22.13 o superior**
+* **pnpm 11.19.0**
 * Herramientas de Entity Framework Core configuradas mediante `dotnet tool restore`
 
 ### Configuración de la API
@@ -98,6 +98,24 @@ Por defecto, el servidor de desarrollo de Next.js utiliza:
 http://localhost:3000
 ```
 
+## Ejecución con Docker
+
+Docker Compose ejecuta SQL Server, la API y el frontend en una red privada. Copie
+la plantilla de configuración y reemplace la contraseña local antes de iniciar:
+
+```powershell
+Copy-Item .env.docker.example .env.docker
+docker compose --env-file .env.docker config --quiet
+docker compose --env-file .env.docker up --detach --build
+docker compose --env-file .env.docker ps
+```
+
+El frontend queda disponible en `http://localhost:3000`, Swagger en
+`http://localhost:5164/swagger` y SQL Server en el puerto local `14330`. Las
+migraciones y los datos iniciales se aplican cuando la API inicia después de que
+SQL Server está saludable. Consulte la [guía Docker](docs/docker.md) para la
+configuración segura, verificación, persistencia y diagnóstico.
+
 ## Pruebas
 
 Para ejecutar la suite completa de pruebas:
@@ -131,11 +149,11 @@ La documentación técnica y funcional se encuentra en el directorio `docs`:
 * [Datos iniciales FIFA 2026](docs/world-cup-2026-seed.md)
 * [Observabilidad](docs/observability.md)
 * [Frontend Next.js](docs/frontend.md)
+* [Docker y Docker Compose](docs/docker.md)
 
 ## Próximos entregables
 
 Entre los elementos pendientes o planificados se encuentran:
 
-* Configuración mediante Docker.
 * Colección de pruebas para Postman.
 * Revisión final de documentación y configuración del proyecto.

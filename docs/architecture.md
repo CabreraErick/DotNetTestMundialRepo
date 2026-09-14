@@ -86,3 +86,26 @@ sequenceDiagram
     Api-->>Next: HTTP + Correlation ID
     Next-->>Browser: respuesta sin exponer URL interna
 ~~~
+
+## Despliegue con Docker Compose
+
+~~~mermaid
+flowchart LR
+    HostBrowser["Navegador :3000"] --> Frontend["frontend:3000"]
+    HostSwagger["Swagger :5164"] --> Api["api:8080"]
+    Frontend -->|"API_BASE_URL=http://api:8080"| Api
+    Api -->|"EF Core / Dapper"| Sql["sqlserver:1433"]
+    Sql --> Volume[("sqlserver-data")]
+
+    subgraph Network["tournament-network"]
+        Frontend
+        Api
+        Sql
+    end
+~~~
+
+Compose inicia la API cuando SQL Server acepta conexiones e inicia el frontend
+cuando `/health` responde correctamente. La API aplica migraciones solo cuando
+`Database__ApplyMigrations=true`; la ejecución local conserva el flujo manual. Las
+imágenes finales ejecutan usuarios sin privilegios y la configuración privada se
+mantiene en `.env.docker`, excluido de Git y de los contextos de compilación.

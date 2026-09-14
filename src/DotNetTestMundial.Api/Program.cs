@@ -13,6 +13,8 @@ using DotNetTestMundial.Application.Matches.GetMatches;
 using DotNetTestMundial.Application.Matches.Mutations;
 using DotNetTestMundial.Application.Matches.Results;
 using DotNetTestMundial.Application.Tournament.Queries;
+using DotNetTestMundial.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -59,8 +61,18 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
     options.OperationFilter<CorrelationIdHeaderOperationFilter>());
+builder.Services.AddHealthChecks();
 
 var app = builder.Build();
+
+// Docker enables migrations explicitly after SQL Server reports healthy. Local
+// execution keeps the existing manual migration workflow unless configured otherwise.
+if (app.Configuration.GetValue<bool>("Database:ApplyMigrations"))
+{
+    using var migrationScope = app.Services.CreateScope();
+    var dbContext = migrationScope.ServiceProvider.GetRequiredService<TournamentDbContext>();
+    await dbContext.Database.MigrateAsync();
+}
 
 // Correlation and timing wrap every endpoint, including Swagger and error responses.
 app.UseMiddleware<RequestObservabilityMiddleware>();
@@ -72,10 +84,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// Local development keeps HTTPS redirection by default. Docker disables it because
+// TLS is not terminated inside the private Compose network.
+if (app.Configuration.GetValue("Http:UseHttpsRedirection", true))
+    app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHealthChecks("/health");
 
 app.Run();
