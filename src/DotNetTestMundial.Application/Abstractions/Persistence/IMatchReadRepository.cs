@@ -22,8 +22,8 @@ public interface IMatchReadRepository
         MatchPageSpecification specification,
         CancellationToken cancellationToken = default);
 
-    Task<IReadOnlyList<GoalListItem>> GetGoalsAsync(
-        Guid matchId, CancellationToken cancellationToken = default);
+    Task<MatchGoalsPage> GetGoalsAsync(
+        GoalPageSpecification specification, CancellationToken cancellationToken = default);
 
     Task<MatchStateSnapshot?> FindStateByIdAsync(
         Guid matchId, CancellationToken cancellationToken = default);

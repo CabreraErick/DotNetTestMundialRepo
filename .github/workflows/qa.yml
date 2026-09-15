@@ -61,6 +61,11 @@ jobs:
       - name: Start QA stack
         run: docker compose --env-file .env.docker.example up --detach --wait --wait-timeout 180
 
+      - name: Test production SQL calculations and seed
+        env:
+          QA_SQLSERVER_CONNECTION: 'Server=localhost,14330;Database=master;User Id=sa;Password=QaOnly_StrongPassword1!;Encrypt=True;TrustServerCertificate=True'
+        run: dotnet test tests/DotNetTestMundial.Infrastructure.Tests --configuration Release --no-restore --filter Category=SqlServer
+
       - name: Run HTTP smoke scenario
         run: npx --yes newman run postman/DotNetTestMundial.postman_collection.json --environment postman/DotNetTestMundial.environment.json --reporters cli
 

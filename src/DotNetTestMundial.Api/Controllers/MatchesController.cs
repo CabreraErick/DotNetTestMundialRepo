@@ -136,9 +136,13 @@ public sealed class MatchesController(
 
     /// <summary>Returns the chronological goal list with scorer and team names.</summary>
     [HttpGet("{id:guid}/goals")]
-    public async Task<IActionResult> GetGoals(Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetGoals(Guid id, [FromQuery] Guid? teamId,
+        [FromQuery] string? search, [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 10, [FromQuery] string sortBy = "minute",
+        [FromQuery] string sortDirection = "asc", CancellationToken cancellationToken = default)
     {
-        var result = await getGoalsHandler.HandleAsync(new(id), cancellationToken);
+        var result = await getGoalsHandler.HandleAsync(new(id, teamId, search,
+            pageNumber, pageSize, sortBy, sortDirection), cancellationToken);
         return result.IsSuccess ? Ok(result.Value) : MapError(result.Error!);
     }
 

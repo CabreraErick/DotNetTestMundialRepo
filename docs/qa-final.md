@@ -3,9 +3,24 @@
 Este bloque convierte la revisión final en comprobaciones reproducibles para backend,
 frontend, contratos HTTP y contenedores.
 
+## Resultado local del bloque ampliado (14 de septiembre de 2026)
+
+- Ejecución completa inicial: 211 pruebas .NET aprobadas, ninguna omitida (Domain 57, Application 107, Infrastructure 37 incluyendo 9 SQL reales, API 10).
+- Frontend: lint y build local/Docker aprobados; tres servicios saludables.
+- Newman: 27 solicitudes y 110 aserciones aprobadas.
+- Proxy Next.js: preservación de traceparent y CorrelationId comprobada; página 2 con un gol conserva marcador 2–1. PageSize 101 devuelve 400.
+- Repetición final después de corregir avisos de nulabilidad en tests: Domain 57, Infrastructure 37 y API 10 aprobados; Windows bloquea Application.Tests.dll (CodeIntegrity eventos 3077/3033, error 0x800711C7). No se considera QA final completamente verde. El script detectó su TRX vacío y terminó con error. Requiere repetir Application en un entorno autorizado, sin desactivar políticas de seguridad desde el script.
+- Bases exclusivas de SQL de los fixtures eliminadas; base y stack de aplicación conservados. Al registrar esta evidencia el bloque estaba preparado en Desarrollo sin commit/push; la publicación y el PR posteriores no constituyen evidencia de ejecución de CI.
+
+## Decisión de cierre (15 de septiembre de 2026)
+
+El responsable decidió posponer la repetición pendiente y preparar commit/PR sin certificar QA final aprobado. No se eliminan tests ni se relajan controles. La repetición autorizada volvió a aprobar Domain 57, Infrastructure 37 y API 10; Application produjo TRX vacío por CodeIntegrity 3077 y el script terminó con error. Además, la correspondencia estricta del mínimo unitario de cálculos queda pendiente: su evidencia actual es integración SQL. Consulte `rubrica-final.md` y el manual `defensa-tecnica.md`.
+
 ## Verificación automatizada local
 
 Desde la raíz del repositorio:
+
+Para incluir SQL Server real y arrancar servicios automáticamente, ejecute `scripts/Start-Qa.ps1` y después `scripts/Test-Qa.ps1 -SkipStart`. Consulte `procesos-qa.md` para la teoría, aislamiento y requisitos. Los comandos individuales siguientes, sin `QA_SQLSERVER_CONNECTION`, omiten las pruebas reales de SQL.
 
 ~~~powershell
 dotnet restore DotNetTestMundial.sln
@@ -45,7 +60,7 @@ npx --yes newman run postman/DotNetTestMundial.postman_collection.json `
   --reporters cli
 ~~~
 
-La ejecución completa contiene 27 solicitudes y 82 aserciones. Un solo fallo
+La ejecución completa contiene 27 solicitudes y verifica también TraceId y el sobre paginado de goles. Un solo fallo
 produce un código de salida distinto de cero tanto localmente como en CI.
 
 La primera solicitud genera un `runId`, abreviaturas únicas y una fecha treinta días

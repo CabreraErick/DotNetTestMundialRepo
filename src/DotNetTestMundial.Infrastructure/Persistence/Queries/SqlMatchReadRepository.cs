@@ -132,10 +132,29 @@ internal sealed class SqlMatchReadRepository(string connectionString) : IMatchRe
             data, specification.PageNumber, specification.PageSize, totalRecords);
     }
 
-    public async Task<IReadOnlyList<GoalListItem>> GetGoalsAsync(
-        Guid matchId, CancellationToken cancellationToken = default)
+    public async Task<MatchGoalsPage> GetGoalsAsync(
+        GoalPageSpecification specification, CancellationToken cancellationToken = default)
     {
-        const string sql = """
+        var column = specification.SortField switch
+        {
+            GoalSortField.Minute => "g.Minute",
+            GoalSortField.PlayerName => "p.Name",
+            GoalSortField.TeamName => "t.Name",
+            GoalSortField.Id => "g.Id",
+            _ => throw new ArgumentOutOfRangeException(nameof(specification))
+        };
+        var direction = specification.SortDirection == MatchSortDirection.Ascending ? "ASC" : "DESC";
+        var sql = $$"""
+            SELECT COUNT_BIG(*) FROM dbo.Goals g
+            INNER JOIN dbo.Players p ON p.Id = g.PlayerId
+            INNER JOIN dbo.Teams t ON t.Id = g.TeamId
+            WHERE g.MatchId = @MatchId AND (@TeamId IS NULL OR g.TeamId = @TeamId)
+              AND (@Pattern IS NULL OR p.Name LIKE @Pattern OR t.Name LIKE @Pattern);
+
+            SELECT COUNT_BIG(CASE WHEN TeamId = @HomeTeamId THEN 1 END) AS HomeGoals,
+                   COUNT_BIG(CASE WHEN TeamId = @AwayTeamId THEN 1 END) AS AwayGoals
+            FROM dbo.Goals WHERE MatchId = @MatchId;
+
             SELECT g.Id,
                    g.MatchId,
                    g.PlayerId,
@@ -146,13 +165,31 @@ internal sealed class SqlMatchReadRepository(string connectionString) : IMatchRe
             FROM dbo.Goals g
             INNER JOIN dbo.Players p ON p.Id = g.PlayerId
             INNER JOIN dbo.Teams t ON t.Id = g.TeamId
-            WHERE g.MatchId = @matchId
-            ORDER BY g.Minute ASC, g.Id ASC;
+            WHERE g.MatchId = @MatchId AND (@TeamId IS NULL OR g.TeamId = @TeamId)
+              AND (@Pattern IS NULL OR p.Name LIKE @Pattern OR t.Name LIKE @Pattern)
+            ORDER BY {{column}} {{direction}}, g.Id ASC
+            OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
             """;
         await using var connection = new SqlConnection(connectionString);
-        return (await connection.QueryAsync<GoalListItem>(new CommandDefinition(
-            sql, new { matchId }, cancellationToken: cancellationToken))).AsList();
+        using var grid = await connection.QueryMultipleAsync(new CommandDefinition(sql, new
+        {
+            specification.MatchId,
+            specification.HomeTeamId,
+            specification.AwayTeamId,
+            specification.TeamId,
+            specification.PageSize,
+            Pattern = specification.Search is null ? null :
+                $"%{specification.Search.Replace("[", "[[]").Replace("%", "[%]").Replace("_", "[_]")}%",
+            Offset = ((long)specification.PageNumber - 1) * specification.PageSize
+        }, cancellationToken: cancellationToken));
+        var total = await grid.ReadSingleAsync<long>();
+        var score = await grid.ReadSingleAsync<GoalCounts>();
+        var data = (await grid.ReadAsync<GoalListItem>()).AsList();
+        return MatchGoalsPage.Create(data, specification.PageNumber, specification.PageSize,
+            total, score.HomeGoals, score.AwayGoals);
     }
+
+    private sealed record GoalCounts(long HomeGoals, long AwayGoals);
 
     public async Task<MatchStateSnapshot?> FindStateByIdAsync(
         Guid matchId, CancellationToken cancellationToken = default)

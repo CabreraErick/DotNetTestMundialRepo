@@ -3,6 +3,7 @@
 using DotNetTestMundial.Application.Abstractions.Events;
 using DotNetTestMundial.Domain.Common;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace DotNetTestMundial.Infrastructure.Observability;
 
@@ -17,9 +18,10 @@ public sealed class LoggingDomainEventDispatcher(
         {
             cancellationToken.ThrowIfCancellationRequested();
             logger.LogInformation(
-                "Domain event {DomainEventType} occurred at {OccurredAt}. Payload: {DomainEvent}",
+                "Domain event {DomainEventType} occurred at {OccurredAt}. TraceId: {TraceId}. Payload: {DomainEvent}",
                 domainEvent.GetType().Name,
                 domainEvent.OccurredAt,
+                Activity.Current?.TraceId.ToString(),
                 domainEvent);
         }
 

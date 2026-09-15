@@ -65,13 +65,12 @@ builder.Services.AddHealthChecks();
 
 var app = builder.Build();
 
-// Docker enables migrations explicitly after SQL Server reports healthy. Local
-// execution keeps the existing manual migration workflow unless configured otherwise.
+// Default startup applies schema + seed; deployments may explicitly disable it.
 if (app.Configuration.GetValue<bool>("Database:ApplyMigrations"))
 {
     using var migrationScope = app.Services.CreateScope();
-    var dbContext = migrationScope.ServiceProvider.GetRequiredService<TournamentDbContext>();
-    await dbContext.Database.MigrateAsync();
+    var initializer = migrationScope.ServiceProvider.GetRequiredService<TournamentDatabaseInitializer>();
+    await initializer.InitializeAsync();
 }
 
 // Correlation and timing wrap every endpoint, including Swagger and error responses.

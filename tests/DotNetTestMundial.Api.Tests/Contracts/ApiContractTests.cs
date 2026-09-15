@@ -23,7 +23,18 @@ public sealed class ApiContractTests : IClassFixture<ApiContractFactory>
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal("qa-contract-001", response.Headers.GetValues("X-Correlation-ID").Single());
+        Assert.Equal(32, response.Headers.GetValues("X-Trace-ID").Single().Length);
         Assert.Equal("Healthy", await response.Content.ReadAsStringAsync());
+    }
+
+    [Fact]
+    public async Task Health_PreservesIncomingW3cTrace()
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Get, "/health");
+        request.Headers.Add("traceparent", "00-1234567890abcdef1234567890abcdef-1234567890abcdef-01");
+        using var response = await _client.SendAsync(request);
+        Assert.Equal("1234567890abcdef1234567890abcdef",
+            response.Headers.GetValues("X-Trace-ID").Single());
     }
 
     [Fact]

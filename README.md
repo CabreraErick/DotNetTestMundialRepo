@@ -4,6 +4,15 @@ Sistema web para la gestión de un torneo de fútbol, desarrollado con **.NET 8*
 
 La aplicación permite administrar equipos, jugadores, calendario de partidos, goles, resultados, tabla de posiciones y clasificación de goleadores.
 
+## Documentación de entrega y defensa
+
+- [Manual teórico y aplicado](docs/defensa-tecnica.md): conceptos, implementación, decisiones y preguntas de defensa.
+- [Demostración y casos de uso](docs/guia-demostracion.md): ejemplos HTTP/PowerShell para el sistema.
+- [Rúbrica y cierre de alcance](docs/rubrica-final.md): objetivos implementados y deuda de pruebas aceptada.
+- [Evidencias de QA](docs/qa-final.md): resultados históricos y bloqueo local de Application.
+
+El alcance de desarrollo está preparado para integración desde `Desarrollo` hacia `main`, con QA final pospuesto por decisión del responsable. No se eliminan tests ni se desactiva CI; no se declara una ejecución integral final aprobada.
+
 ## Arquitectura y tecnologías
 
 La solución utiliza las siguientes tecnologías:
@@ -63,7 +72,7 @@ dotnet tool restore
 dotnet restore DotNetTestMundial.sln
 ```
 
-Aplique las migraciones de Entity Framework Core:
+La API aplica las migraciones y carga el seed automáticamente al iniciar (`Database:ApplyMigrations=true`). Si necesita administrarlas manualmente:
 
 ```powershell
 dotnet ef database update --project src/DotNetTestMundial.Infrastructure --context TournamentDbContext
@@ -78,6 +87,8 @@ dotnet run --project src/DotNetTestMundial.Api
 Durante el entorno de desarrollo, la documentación interactiva de la API puede consultarse mediante **Swagger** utilizando la URL indicada por ASP.NET Core al iniciar la aplicación.
 
 ## Frontend Next.js
+
+Para arrancar y verificar el stack completo de QA con SQL Server real, consulte [procesos de QA](docs/procesos-qa.md): `scripts/Start-Qa.ps1` prepara `.env` local y `scripts/Test-Qa.ps1` ejecuta los controles.
 
 Con la API en ejecución, abra otra terminal y acceda al proyecto frontend:
 

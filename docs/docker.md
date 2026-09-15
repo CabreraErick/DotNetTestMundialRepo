@@ -29,6 +29,8 @@ docker info
 
 ## Configuración privada
 
+Opción automatizada: ejecute `.\scripts\Start-Qa.ps1` desde la raíz. Prepara `.env` sin publicar credenciales, reutiliza `.env.docker` si existe y espera a que los tres servicios estén saludables. Después puede usar `docker compose up --detach --wait` sin `--env-file`. La opción manual siguiente sigue disponible.
+
 Genere el archivo local desde la plantilla:
 
 ```powershell
