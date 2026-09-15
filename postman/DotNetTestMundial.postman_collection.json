@@ -1,0 +1,115 @@
+{
+  "info": {
+    "_postman_id": "94b33989-a534-4f28-b0a2-c4c0d11a62c9",
+    "name": "DotNetTestMundial - QA",
+    "description": "Escenario secuencial de humo para salud, equipos, jugadores, partidos, goles, resultado y clasificaciones.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": { "type": "noauth" },
+  "event": [
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.test('Incluye X-Correlation-ID', () => pm.expect(pm.response.headers.get('X-Correlation-ID')).to.exist);",
+          "pm.test('No hay error de servidor', () => pm.expect(pm.response.code).to.be.below(500));"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    { "key": "runId", "value": "" },
+    { "key": "homeShort", "value": "" },
+    { "key": "awayShort", "value": "" },
+    { "key": "scheduledAt", "value": "" },
+    { "key": "scheduledAt2", "value": "" },
+    { "key": "scheduledAt3", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "00 - Salud",
+      "item": [
+        {
+          "name": "Health check",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/health" },
+          "event": [
+            { "listen": "prerequest", "script": { "exec": ["const now = Date.now();", "const runId = now.toString(36).toUpperCase();", "const matchDate = new Date(now + 30 * 24 * 60 * 60 * 1000);", "matchDate.setUTCHours(18, 0, 0, 0);", "pm.collectionVariables.set('runId', runId);", "pm.collectionVariables.set('homeShort', `H${runId.slice(-8)}`);", "pm.collectionVariables.set('awayShort', `A${runId.slice(-8)}`);", "pm.collectionVariables.set('scheduledAt', matchDate.toISOString());", "pm.collectionVariables.set('scheduledAt2', new Date(matchDate.getTime() + 60 * 60 * 1000).toISOString());", "pm.collectionVariables.set('scheduledAt3', new Date(matchDate.getTime() + 2 * 60 * 60 * 1000).toISOString());"] } },
+            { "listen": "test", "script": { "exec": ["pm.test('API saludable', () => pm.response.to.have.status(200));"] } }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "01 - Equipos",
+      "item": [
+        {
+          "name": "Crear equipo local",
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Idempotency-Key", "value": "team-home-{{runId}}" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"QA Local {{runId}}\",\n  \"shortName\": \"{{homeShort}}\"\n}" }, "url": "{{baseUrl}}/api/teams" },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Equipo local creado', () => pm.response.to.have.status(201));", "const body = pm.response.json(); pm.environment.set('homeTeamId', body.id || body.teamId || body.TeamId);"] } }]
+        },
+        {
+          "name": "Repetir creación idempotente",
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Idempotency-Key", "value": "team-home-{{runId}}" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"QA Local {{runId}}\",\n  \"shortName\": \"{{homeShort}}\"\n}" }, "url": "{{baseUrl}}/api/teams" },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Respuesta repetible', () => pm.response.to.have.status(201));", "const body = pm.response.json();", "pm.test('Mismo identificador', () => pm.expect(body.id || body.teamId || body.TeamId).to.eql(pm.environment.get('homeTeamId')));"] } }]
+        },
+        {
+          "name": "Crear equipo visitante",
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Idempotency-Key", "value": "team-away-{{runId}}" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"QA Visitante {{runId}}\",\n  \"shortName\": \"{{awayShort}}\"\n}" }, "url": "{{baseUrl}}/api/teams" },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Equipo visitante creado', () => pm.response.to.have.status(201));", "const body = pm.response.json(); pm.environment.set('awayTeamId', body.id || body.teamId || body.TeamId);"] } }]
+        },
+        { "name": "Listar equipos", "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/api/teams?search=QA&pageNumber=1&pageSize=10&sortBy=name&sortDirection=asc" }, "event": [{ "listen": "test", "script": { "exec": ["pm.test('Página obtenida', () => pm.response.to.have.status(200));"] } }] },
+        { "name": "Obtener equipo", "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/api/teams/{{homeTeamId}}" }, "event": [{ "listen": "test", "script": { "exec": ["pm.test('Equipo obtenido', () => pm.response.to.have.status(200));"] } }] },
+        { "name": "Reemplazar equipo", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"QA Local Actualizado {{runId}}\",\n  \"shortName\": \"{{homeShort}}\"\n}" }, "url": "{{baseUrl}}/api/teams/{{homeTeamId}}" }, "event": [{ "listen": "test", "script": { "exec": ["pm.test('Equipo actualizado', () => pm.response.to.have.status(200));"] } }] },
+        { "name": "Modificar equipo", "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"QA Local Final {{runId}}\"\n}" }, "url": "{{baseUrl}}/api/teams/{{homeTeamId}}" }, "event": [{ "listen": "test", "script": { "exec": ["pm.test('Equipo modificado', () => pm.response.to.have.status(200));"] } }] }
+      ]
+    },
+    {
+      "name": "02 - Jugadores",
+      "item": [
+        {
+          "name": "Crear jugador local",
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Idempotency-Key", "value": "player-home-{{runId}}" }], "body": { "mode": "raw", "raw": "{\n  \"teamId\": \"{{homeTeamId}}\",\n  \"name\": \"Delantero QA\",\n  \"jerseyNumber\": 9\n}" }, "url": "{{baseUrl}}/api/players" },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Jugador local creado', () => pm.response.to.have.status(201));", "const body = pm.response.json(); pm.environment.set('homePlayerId', body.id || body.playerId || body.PlayerId);"] } }]
+        },
+        {
+          "name": "Crear jugador visitante",
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Idempotency-Key", "value": "player-away-{{runId}}" }], "body": { "mode": "raw", "raw": "{\n  \"teamId\": \"{{awayTeamId}}\",\n  \"name\": \"Defensa QA\",\n  \"jerseyNumber\": 4\n}" }, "url": "{{baseUrl}}/api/players" },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Jugador visitante creado', () => pm.response.to.have.status(201));", "const body = pm.response.json(); pm.environment.set('awayPlayerId', body.id || body.playerId || body.PlayerId);"] } }]
+        },
+        { "name": "Listar jugadores", "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/api/players?teamId={{homeTeamId}}&isActive=true&pageNumber=1&pageSize=10" }, "event": [{ "listen": "test", "script": { "exec": ["pm.test('Página obtenida', () => pm.response.to.have.status(200));"] } }] },
+        { "name": "Obtener jugador", "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/api/players/{{homePlayerId}}" }, "event": [{ "listen": "test", "script": { "exec": ["pm.test('Jugador obtenido', () => pm.response.to.have.status(200));"] } }] },
+        { "name": "Reemplazar jugador", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"Delantero QA Actualizado\",\n  \"jerseyNumber\": 10\n}" }, "url": "{{baseUrl}}/api/players/{{homePlayerId}}" }, "event": [{ "listen": "test", "script": { "exec": ["pm.test('Jugador actualizado', () => pm.response.to.have.status(200));"] } }] },
+        { "name": "Modificar jugador", "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"Goleador QA\"\n}" }, "url": "{{baseUrl}}/api/players/{{homePlayerId}}" }, "event": [{ "listen": "test", "script": { "exec": ["pm.test('Jugador modificado', () => pm.response.to.have.status(200));"] } }] }
+      ]
+    },
+    {
+      "name": "03 - Partido y resultado",
+      "item": [
+        {
+          "name": "Programar partido",
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Idempotency-Key", "value": "match-{{runId}}" }], "body": { "mode": "raw", "raw": "{\n  \"homeTeamId\": \"{{homeTeamId}}\",\n  \"awayTeamId\": \"{{awayTeamId}}\",\n  \"scheduledAt\": \"{{scheduledAt}}\"\n}" }, "url": "{{baseUrl}}/api/matches" },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Partido creado', () => pm.response.to.have.status(201));", "const body = pm.response.json(); pm.environment.set('matchId', body.id || body.matchId || body.MatchId);"] } }]
+        },
+        { "name": "Listar partidos", "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/api/matches?teamId={{homeTeamId}}&status=Scheduled&pageNumber=1&pageSize=10" }, "event": [{ "listen": "test", "script": { "exec": ["pm.test('Calendario obtenido', () => pm.response.to.have.status(200));"] } }] },
+        { "name": "Obtener partido", "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/api/matches/{{matchId}}" }, "event": [{ "listen": "test", "script": { "exec": ["pm.test('Partido obtenido', () => pm.response.to.have.status(200));"] } }] },
+        { "name": "Reemplazar partido", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"homeTeamId\": \"{{homeTeamId}}\",\n  \"awayTeamId\": \"{{awayTeamId}}\",\n  \"scheduledAt\": \"{{scheduledAt2}}\"\n}" }, "url": "{{baseUrl}}/api/matches/{{matchId}}" }, "event": [{ "listen": "test", "script": { "exec": ["pm.test('Partido actualizado', () => pm.response.to.have.status(200));"] } }] },
+        { "name": "Modificar partido", "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"scheduledAt\": \"{{scheduledAt3}}\"\n}" }, "url": "{{baseUrl}}/api/matches/{{matchId}}" }, "event": [{ "listen": "test", "script": { "exec": ["pm.test('Partido modificado', () => pm.response.to.have.status(200));"] } }] },
+        { "name": "Registrar gol", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Idempotency-Key", "value": "goal-{{runId}}" }], "body": { "mode": "raw", "raw": "{\n  \"playerId\": \"{{homePlayerId}}\",\n  \"minute\": 35\n}" }, "url": "{{baseUrl}}/api/matches/{{matchId}}/goals" }, "event": [{ "listen": "test", "script": { "exec": ["pm.test('Gol registrado', () => pm.response.to.have.status(201));"] } }] },
+        { "name": "Listar goles", "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/api/matches/{{matchId}}/goals" }, "event": [{ "listen": "test", "script": { "exec": ["pm.test('Goles obtenidos', () => pm.response.to.have.status(200));"] } }] },
+        { "name": "Registrar resultado", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"homeScore\": 1,\n  \"awayScore\": 0\n}" }, "url": "{{baseUrl}}/api/matches/{{matchId}}/result" }, "event": [{ "listen": "test", "script": { "exec": ["pm.test('Resultado registrado', () => pm.response.to.have.status(200));"] } }] },
+        { "name": "Cancelar partido finalizado - conflicto esperado", "request": { "method": "DELETE", "header": [], "url": "{{baseUrl}}/api/matches/{{matchId}}" }, "event": [{ "listen": "test", "script": { "exec": ["pm.test('Protege historial', () => pm.response.to.have.status(409));"] } }] }
+      ]
+    },
+    {
+      "name": "04 - Clasificaciones",
+      "item": [
+        { "name": "Posiciones", "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/api/standings?pageNumber=1&pageSize=10&sortBy=points&sortDirection=desc" }, "event": [{ "listen": "test", "script": { "exec": ["pm.test('Posiciones obtenidas', () => pm.response.to.have.status(200));"] } }] },
+        { "name": "Goleadores", "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/api/scorers?teamId={{homeTeamId}}&pageNumber=1&pageSize=10" }, "event": [{ "listen": "test", "script": { "exec": ["pm.test('Goleadores obtenidos', () => pm.response.to.have.status(200));"] } }] },
+        { "name": "Eliminar jugador con historial", "request": { "method": "DELETE", "header": [], "url": "{{baseUrl}}/api/players/{{homePlayerId}}" }, "event": [{ "listen": "test", "script": { "exec": ["pm.test('Baja lógica aceptada', () => pm.response.to.have.status(204));"] } }] },
+        { "name": "Eliminar equipo referenciado - conflicto esperado", "request": { "method": "DELETE", "header": [], "url": "{{baseUrl}}/api/teams/{{homeTeamId}}" }, "event": [{ "listen": "test", "script": { "exec": ["pm.test('Protege referencias', () => pm.response.to.have.status(409));"] } }] }
+      ]
+    }
+  ],
+  "protocolProfileBehavior": { "disableBodyPruning": true }
+}

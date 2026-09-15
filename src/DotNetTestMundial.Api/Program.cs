@@ -95,3 +95,7 @@ app.MapControllers();
 app.MapHealthChecks("/health");
 
 app.Run();
+
+// Exposes the top-level entry point to the API contract test host without changing
+// the production composition root.
+public partial class Program;

@@ -150,10 +150,9 @@ La documentación técnica y funcional se encuentra en el directorio `docs`:
 * [Observabilidad](docs/observability.md)
 * [Frontend Next.js](docs/frontend.md)
 * [Docker y Docker Compose](docs/docker.md)
+* [QA final](docs/qa-final.md)
 
 ## Próximos entregables
 
-Entre los elementos pendientes o planificados se encuentran:
-
-* Colección de pruebas para Postman.
-* Revisión final de documentación y configuración del proyecto.
+El repositorio incluye una colección Postman, pruebas de contrato HTTP y un flujo de
+integración continua. La validación final se encuentra en la [guía de QA](docs/qa-final.md).

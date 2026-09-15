@@ -1,0 +1,73 @@
+name: QA
+
+on:
+  push:
+    branches: [main, Desarrollo]
+  pull_request:
+    branches: [main, Desarrollo]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      MSSQL_SA_PASSWORD: QaOnly_StrongPassword1!
+      MSSQL_DATABASE: DotNetTestMundialQa
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+          cache: true
+          cache-dependency-path: '**/*.csproj'
+
+      - name: Restore and test backend
+        run: |
+          dotnet restore DotNetTestMundial.sln
+          dotnet format DotNetTestMundial.sln --verify-no-changes --no-restore
+          dotnet test DotNetTestMundial.sln --configuration Release --no-restore --verbosity normal
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.19.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+
+      - name: Verify frontend
+        working-directory: frontend
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm lint
+          pnpm build
+
+      - name: Validate Docker Compose
+        run: docker compose --env-file .env.docker.example config --quiet
+
+      - name: Build container images
+        run: docker compose --env-file .env.docker.example build
+
+      - name: Start QA stack
+        run: docker compose --env-file .env.docker.example up --detach --wait --wait-timeout 180
+
+      - name: Run HTTP smoke scenario
+        run: npx --yes newman run postman/DotNetTestMundial.postman_collection.json --environment postman/DotNetTestMundial.environment.json --reporters cli
+
+      - name: Show container logs after failure
+        if: failure()
+        run: docker compose --env-file .env.docker.example logs --no-color
+
+      - name: Stop QA stack
+        if: always()
+        run: docker compose --env-file .env.docker.example down --volumes
