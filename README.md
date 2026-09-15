@@ -4,6 +4,15 @@ Sistema web para la gestión de un torneo de fútbol, desarrollado con **.NET 8*
 
 La aplicación permite administrar equipos, jugadores, calendario de partidos, goles, resultados, tabla de posiciones y clasificación de goleadores.
 
+## Documentación de entrega y defensa
+
+- [Manual teórico y aplicado](docs/defensa-tecnica.md): conceptos, implementación, decisiones y preguntas de defensa.
+- [Demostración y casos de uso](docs/guia-demostracion.md): ejemplos HTTP/PowerShell para el sistema.
+- [Rúbrica y cierre de alcance](docs/rubrica-final.md): objetivos implementados y deuda de pruebas aceptada.
+- [Evidencias de QA](docs/qa-final.md): resultados históricos y bloqueo local de Application.
+
+El alcance de desarrollo está preparado para integración desde `Desarrollo` hacia `main`, con QA final pospuesto por decisión del responsable. No se eliminan tests ni se desactiva CI; no se declara una ejecución integral final aprobada.
+
 ## Arquitectura y tecnologías
 
 La solución utiliza las siguientes tecnologías:
@@ -33,8 +42,8 @@ Para ejecutar el proyecto se requiere:
 
 * **.NET SDK 8**
 * **SQL Server**
-* **Node.js 20.9 o superior**
-* **pnpm**
+* **Node.js 22.13 o superior**
+* **pnpm 11.19.0**
 * Herramientas de Entity Framework Core configuradas mediante `dotnet tool restore`
 
 ### Configuración de la API
@@ -63,7 +72,7 @@ dotnet tool restore
 dotnet restore DotNetTestMundial.sln
 ```
 
-Aplique las migraciones de Entity Framework Core:
+La API aplica las migraciones y carga el seed automáticamente al iniciar (`Database:ApplyMigrations=true`). Si necesita administrarlas manualmente:
 
 ```powershell
 dotnet ef database update --project src/DotNetTestMundial.Infrastructure --context TournamentDbContext
@@ -78,6 +87,8 @@ dotnet run --project src/DotNetTestMundial.Api
 Durante el entorno de desarrollo, la documentación interactiva de la API puede consultarse mediante **Swagger** utilizando la URL indicada por ASP.NET Core al iniciar la aplicación.
 
 ## Frontend Next.js
+
+Para arrancar y verificar el stack completo de QA con SQL Server real, consulte [procesos de QA](docs/procesos-qa.md): `scripts/Start-Qa.ps1` prepara `.env` local y `scripts/Test-Qa.ps1` ejecuta los controles.
 
 Con la API en ejecución, abra otra terminal y acceda al proyecto frontend:
 
@@ -97,6 +108,24 @@ Por defecto, el servidor de desarrollo de Next.js utiliza:
 ```text
 http://localhost:3000
 ```
+
+## Ejecución con Docker
+
+Docker Compose ejecuta SQL Server, la API y el frontend en una red privada. Copie
+la plantilla de configuración y reemplace la contraseña local antes de iniciar:
+
+```powershell
+Copy-Item .env.docker.example .env.docker
+docker compose --env-file .env.docker config --quiet
+docker compose --env-file .env.docker up --detach --build
+docker compose --env-file .env.docker ps
+```
+
+El frontend queda disponible en `http://localhost:3000`, Swagger en
+`http://localhost:5164/swagger` y SQL Server en el puerto local `14330`. Las
+migraciones y los datos iniciales se aplican cuando la API inicia después de que
+SQL Server está saludable. Consulte la [guía Docker](docs/docker.md) para la
+configuración segura, verificación, persistencia y diagnóstico.
 
 ## Pruebas
 
@@ -131,11 +160,10 @@ La documentación técnica y funcional se encuentra en el directorio `docs`:
 * [Datos iniciales FIFA 2026](docs/world-cup-2026-seed.md)
 * [Observabilidad](docs/observability.md)
 * [Frontend Next.js](docs/frontend.md)
+* [Docker y Docker Compose](docs/docker.md)
+* [QA final](docs/qa-final.md)
 
 ## Próximos entregables
 
-Entre los elementos pendientes o planificados se encuentran:
-
-* Configuración mediante Docker.
-* Colección de pruebas para Postman.
-* Revisión final de documentación y configuración del proyecto.
+El repositorio incluye una colección Postman, pruebas de contrato HTTP y un flujo de
+integración continua. La validación final se encuentra en la [guía de QA](docs/qa-final.md).

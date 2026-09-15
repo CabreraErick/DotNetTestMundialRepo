@@ -19,6 +19,8 @@ public static class DependencyInjection
         ArgumentException.ThrowIfNullOrWhiteSpace(connectionString);
         // Retries must encompass the entire future Command, not an individual SaveChanges.
         services.AddDbContext<TournamentDbContext>(options => options.UseSqlServer(connectionString));
+        services.AddScoped(provider => new TournamentDatabaseInitializer(
+            provider.GetRequiredService<TournamentDbContext>(), connectionString));
         services.AddScoped(typeof(IWriteRepository<>), typeof(WriteRepository<>));
         services.AddLogging();
         services.AddScoped<IDomainEventDispatcher, LoggingDomainEventDispatcher>();

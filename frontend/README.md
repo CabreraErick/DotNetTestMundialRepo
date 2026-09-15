@@ -6,14 +6,14 @@ Aplicación Next.js con App Router, TypeScript, HTML semántico, CSS y `fetch` n
 
 ## Requisitos
 
-- Node.js 20.9 o superior.
-- pnpm.
+- Node.js 22.13 o superior.
+- pnpm 11.19.0.
 - API disponible en `http://localhost:5164` o en la dirección indicada por `API_BASE_URL`.
 
 ## Ejecución desde PowerShell
 
 ~~~powershell
-cd C:\Users\Erick\source\GitHub\DotNetTestMundialRepo-DevCodex\frontend
+cd frontend
 Copy-Item .env.example .env.local
 pnpm install
 pnpm dev

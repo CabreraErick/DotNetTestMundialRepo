@@ -98,8 +98,8 @@ public sealed class GetMatchesQueryHandlerTests
                 [], specification.PageNumber, specification.PageSize, 0));
         }
 
-        public Task<IReadOnlyList<GoalListItem>> GetGoalsAsync(
-            Guid matchId, CancellationToken token = default) => throw new NotSupportedException();
+        public Task<MatchGoalsPage> GetGoalsAsync(
+            GoalPageSpecification specification, CancellationToken token = default) => throw new NotSupportedException();
 
         public Task<MatchStateSnapshot?> FindStateByIdAsync(
             Guid matchId, CancellationToken token = default) => throw new NotSupportedException();

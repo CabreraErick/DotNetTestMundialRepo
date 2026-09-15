@@ -4,8 +4,8 @@ import "server-only";
 
 interface ProxyContext { params: Promise<{ path: string[] }>; }
 
-const requestHeaders = ["accept", "content-type", "idempotency-key", "x-correlation-id"];
-const responseHeaders = ["content-type", "location", "x-correlation-id"];
+const requestHeaders = ["accept", "content-type", "idempotency-key", "x-correlation-id", "traceparent", "tracestate"];
+const responseHeaders = ["content-type", "location", "x-correlation-id", "x-trace-id"];
 
 async function proxy(request: Request, context: ProxyContext): Promise<Response> {
   const apiBaseUrl = process.env.API_BASE_URL?.replace(/\/$/, "");

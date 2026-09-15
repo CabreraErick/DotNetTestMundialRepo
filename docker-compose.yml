@@ -1,0 +1,126 @@
+# Responsabilidad: coordina los contenedores necesarios para ejecutar el sistema.
+# Relación: proporciona SQL Server y posteriormente conectará API y frontend en una red privada.
+
+name: sistema-gestor-futbol
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sistema-gestor-futbol-sqlserver
+
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Developer"
+      MSSQL_SA_PASSWORD: "${MSSQL_SA_PASSWORD:?MSSQL_SA_PASSWORD debe configurarse}"
+
+    ports:
+      - "${SQLSERVER_HOST_PORT:-14330}:1433"
+
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+
+    networks:
+      - tournament-network
+
+    # Confirma que SQL Server acepta autenticación antes de iniciar la API.
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa
+          -P "$$MSSQL_SA_PASSWORD" -C -b
+          -Q "SELECT 1" -o /dev/null
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+    restart: unless-stopped
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: sistema-gestor-futbol-api:dev
+    container_name: sistema-gestor-futbol-api
+
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: "8080"
+      Database__ApplyMigrations: "true"
+      Http__UseHttpsRedirection: "false"
+      ConnectionStrings__Tournament: >-
+        Server=sqlserver,1433;Database=${MSSQL_DATABASE:?MSSQL_DATABASE debe configurarse};
+        User Id=sa;Password=${MSSQL_SA_PASSWORD:?MSSQL_SA_PASSWORD debe configurarse};
+        Encrypt=True;TrustServerCertificate=True
+
+    ports:
+      - "${API_HOST_PORT:-5164}:8080"
+
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+
+    networks:
+      - tournament-network
+
+    # Comprueba el endpoint ASP.NET sin agregar herramientas a la imagen final.
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          bash -c 'exec 3<>/dev/tcp/127.0.0.1/8080 &&
+          printf "GET /health HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n" >&3 &&
+          grep -q "200 OK" <&3'
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 45s
+
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: sistema-gestor-futbol-frontend:dev
+    container_name: sistema-gestor-futbol-frontend
+
+    environment:
+      API_BASE_URL: http://api:8080
+
+    ports:
+      - "${FRONTEND_HOST_PORT:-3000}:3000"
+
+    depends_on:
+      api:
+        condition: service_healthy
+
+    networks:
+      - tournament-network
+
+    # Node comprueba que el servidor standalone entregue correctamente la portada.
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - >-
+          fetch('http://127.0.0.1:3000')
+          .then(response => { if (!response.ok) process.exit(1); })
+          .catch(() => process.exit(1));
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+    restart: unless-stopped
+
+volumes:
+  sqlserver-data:
+    name: sistema-gestor-futbol-sqlserver-data
+
+networks:
+  tournament-network:
+    name: sistema-gestor-futbol-network
+    driver: bridge

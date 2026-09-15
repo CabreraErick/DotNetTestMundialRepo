@@ -69,8 +69,33 @@ public sealed class RequestObservabilityMiddlewareTests
         Assert.Contains(logger.Entries, entry =>
             entry.Level == LogLevel.Error && ReferenceEquals(entry.Exception, expected));
         Assert.Contains(logger.Entries, entry =>
-            entry.Level == LogLevel.Information &&
-            Equals(entry.Properties["StatusCode"], StatusCodes.Status500InternalServerError));
+            entry.Level == LogLevel.Error &&
+            Equals(entry.Properties.GetValueOrDefault("StatusCode"), StatusCodes.Status500InternalServerError));
+    }
+
+    [Theory]
+    [InlineData(200, LogLevel.Information)]
+    [InlineData(400, LogLevel.Warning)]
+    [InlineData(409, LogLevel.Warning)]
+    [InlineData(500, LogLevel.Error)]
+    public async Task Invoke_UsesStatusAppropriateLevelAndIndependentTraceId(int status, LogLevel level)
+    {
+        var logger = new RecordingLogger<RequestObservabilityMiddleware>();
+        var middleware = new RequestObservabilityMiddleware(context =>
+        {
+            context.Response.StatusCode = status;
+            return Task.CompletedTask;
+        }, logger);
+        var context = CreateContext();
+        context.Request.Headers[RequestObservabilityMiddleware.CorrelationHeaderName] = "business-operation";
+        await middleware.InvokeAsync(context);
+        var traceId = context.Response.Headers[RequestObservabilityMiddleware.TraceHeaderName].ToString();
+        Assert.Equal(32, traceId.Length);
+        Assert.NotEqual("business-operation", traceId);
+        Assert.Contains(logger.Scopes, scope => Equals(scope["TraceId"], traceId));
+        Assert.Contains(logger.Entries, entry => entry.Level == level &&
+            Equals(entry.Properties.GetValueOrDefault("StatusCode"), status));
+        Assert.Contains(logger.Entries, entry => entry.Level == LogLevel.Debug);
     }
 
     private static DefaultHttpContext CreateContext()

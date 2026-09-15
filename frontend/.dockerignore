@@ -1,0 +1,21 @@
+# Responsabilidad: limita el contexto enviado al construir la imagen de Next.js.
+# Relación: conserva únicamente el código y la configuración necesarios para compilar el frontend.
+
+node_modules
+.next
+.pnpm-store
+out
+dist
+coverage
+
+.env
+.env.*
+*.local
+
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+.DS_Store
+Thumbs.db

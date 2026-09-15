@@ -1,0 +1,15 @@
+{
+  "id": "4ee55b72-fb32-45ca-99f9-a1f495bb94a6",
+  "name": "DotNetTestMundial - Local",
+  "values": [
+    { "key": "baseUrl", "value": "http://localhost:5164", "enabled": true },
+    { "key": "homeTeamId", "value": "", "enabled": true },
+    { "key": "awayTeamId", "value": "", "enabled": true },
+    { "key": "homePlayerId", "value": "", "enabled": true },
+    { "key": "awayPlayerId", "value": "", "enabled": true },
+    { "key": "matchId", "value": "", "enabled": true },
+    { "key": "correlationId", "value": "postman-qa-run", "enabled": true }
+  ],
+  "_postman_variable_scope": "environment",
+  "_postman_exported_using": "Codex QA"
+}

@@ -137,7 +137,7 @@ public sealed class CreateMatchCommandHandlerTests
             Guid? excludingMatchId = null, CancellationToken token = default) => Task.FromResult(scheduleConflict);
         public Task<MatchListItem?> FindByIdAsync(Guid id, CancellationToken token = default) => throw new NotSupportedException();
         public Task<PagedResult<MatchListItem>> GetPageAsync(MatchPageSpecification specification, CancellationToken token = default) => throw new NotSupportedException();
-        public Task<IReadOnlyList<GoalListItem>> GetGoalsAsync(Guid matchId, CancellationToken token = default) => throw new NotSupportedException();
+        public Task<MatchGoalsPage> GetGoalsAsync(GoalPageSpecification specification, CancellationToken token = default) => throw new NotSupportedException();
         public Task<MatchStateSnapshot?> FindStateByIdAsync(Guid matchId, CancellationToken token = default) => throw new NotSupportedException();
     }
 

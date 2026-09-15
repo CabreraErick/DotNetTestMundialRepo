@@ -152,10 +152,39 @@ public sealed class MatchResultCommandHandlerTests
             .HandleAsync(new(fixture.Match.Id));
 
         Assert.True(result.IsSuccess);
-        Assert.Single(result.Value);
+        Assert.Single(result.Value.Data);
+    }
+
+    [Theory]
+    [InlineData(0, 10, "minute", "asc")]
+    [InlineData(1, 0, "minute", "asc")]
+    [InlineData(1, 101, "minute", "asc")]
+    [InlineData(1, 10, "unsafe-column", "asc")]
+    [InlineData(1, 10, "minute", "unsafe-direction")]
+    public async Task GetGoals_InvalidPaginationOrOrdering_ReturnsValidation(
+        int page, int size, string sort, string direction)
+    {
+        var fixture = new Fixture();
+        var result = await new GetMatchGoalsQueryHandler(fixture.Reads)
+            .HandleAsync(new(fixture.Match.Id, PageNumber: page, PageSize: size,
+                SortBy: sort, SortDirection: direction));
+        Assert.True(result.IsFailure);
+        Assert.NotNull(result.Error);
+        Assert.Equal(ErrorType.Validation, result.Error.Type);
+    }
+
+    [Fact]
+    public async Task GetGoals_UnknownMatch_ReturnsNotFound()
+    {
+        var fixture = new Fixture();
+        var result = await new GetMatchGoalsQueryHandler(fixture.Reads).HandleAsync(new(Guid.NewGuid()));
+        Assert.True(result.IsFailure);
+        Assert.NotNull(result.Error);
+        Assert.Equal(ErrorType.NotFound, result.Error.Type);
     }
 
     private sealed class Fixture
+
     {
         public MatchListItem Match { get; }
         public PlayerListItem HomePlayer { get; }
@@ -195,9 +224,12 @@ public sealed class MatchResultCommandHandlerTests
         public List<GoalListItem> Goals { get; } = [];
         public Task<MatchListItem?> FindByIdAsync(Guid id, CancellationToken token = default) =>
             Task.FromResult<MatchListItem?>(id == match.Id ? match : null);
-        public Task<IReadOnlyList<GoalListItem>> GetGoalsAsync(
-            Guid matchId, CancellationToken token = default) =>
-            Task.FromResult<IReadOnlyList<GoalListItem>>(Goals);
+        public Task<MatchGoalsPage> GetGoalsAsync(
+            GoalPageSpecification specification, CancellationToken token = default) =>
+            Task.FromResult(MatchGoalsPage.Create(Goals, specification.PageNumber,
+                specification.PageSize, Goals.Count,
+                Goals.Count(goal => goal.TeamId == match.HomeTeamId),
+                Goals.Count(goal => goal.TeamId == match.AwayTeamId)));
         public Task<MatchStateSnapshot?> FindStateByIdAsync(
             Guid matchId, CancellationToken token = default) =>
             Task.FromResult<MatchStateSnapshot?>(matchId == match.Id

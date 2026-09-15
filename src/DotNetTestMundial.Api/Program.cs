@@ -13,6 +13,8 @@ using DotNetTestMundial.Application.Matches.GetMatches;
 using DotNetTestMundial.Application.Matches.Mutations;
 using DotNetTestMundial.Application.Matches.Results;
 using DotNetTestMundial.Application.Tournament.Queries;
+using DotNetTestMundial.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -59,8 +61,17 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
     options.OperationFilter<CorrelationIdHeaderOperationFilter>());
+builder.Services.AddHealthChecks();
 
 var app = builder.Build();
+
+// Default startup applies schema + seed; deployments may explicitly disable it.
+if (app.Configuration.GetValue<bool>("Database:ApplyMigrations"))
+{
+    using var migrationScope = app.Services.CreateScope();
+    var initializer = migrationScope.ServiceProvider.GetRequiredService<TournamentDatabaseInitializer>();
+    await initializer.InitializeAsync();
+}
 
 // Correlation and timing wrap every endpoint, including Swagger and error responses.
 app.UseMiddleware<RequestObservabilityMiddleware>();
@@ -72,10 +83,18 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// Local development keeps HTTPS redirection by default. Docker disables it because
+// TLS is not terminated inside the private Compose network.
+if (app.Configuration.GetValue("Http:UseHttpsRedirection", true))
+    app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHealthChecks("/health");
 
 app.Run();
+
+// Exposes the top-level entry point to the API contract test host without changing
+// the production composition root.
+public partial class Program;

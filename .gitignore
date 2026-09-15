@@ -20,6 +20,7 @@ _ReSharper*/
 
 # Frontend Node / Next.js
 node_modules/
+.pnpm-store/
 .next/
 out/
 dist/
@@ -32,6 +33,7 @@ pnpm-debug.log*
 .env
 .env.*
 !.env.example
+!.env.docker.example
 appsettings.*.local.json
 secrets.json
 

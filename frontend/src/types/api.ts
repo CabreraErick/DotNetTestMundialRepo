@@ -52,6 +52,11 @@ export interface Goal {
   minute: number;
 }
 
+export interface MatchGoalsPage extends PagedResult<Goal> {
+  homeGoals: number;
+  awayGoals: number;
+}
+
 export interface Standing {
   position: number;
   teamId: string;

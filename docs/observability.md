@@ -1,5 +1,9 @@
 # Observabilidad
 
+Cada respuesta incluye también `X-Trace-ID` (32 caracteres hexadecimales). La API conserva la traza W3C recibida mediante `traceparent`; no utiliza CorrelationId como TraceId. El proxy del frontend transmite `traceparent` y `tracestate`, y devuelve ambos identificadores al cliente.
+
+El inicio se registra en Debug. La finalización usa Information para respuestas menores de 400, Warning para 4xx y Error para 5xx. Las excepciones también se registran en Error. El scope contiene CorrelationId y TraceId; los eventos incluyen TraceId explícitamente. Debug requiere habilitar ese nivel de logging para verlo en consola.
+
 La API asigna un identificador a cada solicitud mediante X-Correlation-ID. Si el cliente envía un valor no vacío de hasta 128 caracteres, la API lo conserva; en otro caso genera un GUID. El mismo valor se devuelve en el encabezado de respuesta y se incorpora al alcance de logging.
 
 RequestObservabilityMiddleware registra método HTTP, ruta, código de respuesta y duración en milisegundos. Si una excepción no controlada atraviesa el middleware, también se registra con el mismo identificador antes de continuar hacia el manejo estándar de ASP.NET Core.
