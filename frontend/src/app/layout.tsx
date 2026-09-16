@@ -25,7 +25,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <header className="siteHeader">
           <div className="shell headerContent">
             <Link className="brand" href="/">
-              <span className="brandMark" aria-hidden="true">MC</span>
+              <span className="brandMark" aria-hidden="true">EC</span>
               <span>
                 <strong>Sistema Mundialito</strong>
                 <small>Gestión del torneo</small>

@@ -1,7 +1,6 @@
 # Reglas de dominio
 
-Estas decisiones completan los detalles no especificados en la prueba técnica. El sistema no agrega soporte para múltiples torneos, transferencias, autogoles ni edición de resultados finalizados.
-
+Estas decisiones completan los detalles no especificados en la prueba técnica. 
 ## Identidad y calendario
 
 - Nombre y abreviatura identifican de forma única a cada equipo, sin distinguir mayúsculas o minúsculas según la intercalación de SQL Server.

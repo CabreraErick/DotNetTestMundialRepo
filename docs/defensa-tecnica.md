@@ -4,9 +4,7 @@
 
 El sistema administra un Mundialito corporativo: equipos, integrantes, calendario, goles, resultados y clasificaciones. La API ASP.NET Core usa .NET 8; Next.js/React/TypeScript presenta los flujos. SQL Server conserva estado; EF Core escribe y Dapper consulta. La solución se ejecuta con Docker Compose.
 
-La prioridad fue mantener reglas coherentes, escrituras atómicas y consultas eficientes. No se implementaron múltiples torneos, autenticación, transferencias, autogoles, edición de resultados finalizados ni un bus de eventos externo. La sofisticación visual no forma parte de la evaluación, pero el frontend funcional sí.
-
-Estado de entrega: alcance implementado con cierre de pruebas pendiente por decisión del responsable. Consulte [rúbrica final](rubrica-final.md) para evidencias, interpretaciones y reservas. No se declara una nota ni QA integral final aprobado.
+La prioridad fue mantener reglas coherentes, escrituras atómicas y consultas eficientes. 
 
 ## 2. Mapa de lectura
 
@@ -27,12 +25,12 @@ Estado de entrega: alcance implementado con cierre de pruebas pendiente por deci
 
 ## 3. Clean Architecture e inversión de dependencias
 
-Clean Architecture separa reglas de negocio de mecanismos externos. La dirección de dependencias apunta hacia las capas internas; no se trata solamente de crear cuatro carpetas.
+Clean Architecture separa reglas de negocio de mecanismos externos. La dirección de dependencias apunta hacia las capas internas.
 
 - Domain contiene `Team`, `Player`, `Match`, `Goal`, `Result`, errores y eventos. No depende de HTTP ni persistencia.
 - Application contiene casos de uso y contratos como `IWriteRepository<T>`, `IMatchReadRepository`, `IUnitOfWork` e `IIdempotencyStore`. Depende de Domain.
 - Infrastructure implementa contratos usando EF Core, Dapper, SQL Server y logging.
-- API recibe HTTP, convierte requests en Commands/Queries, traduce Result y registra servicios en `Program.cs`. La referencia a Infrastructure pertenece a la composición del host, no a reglas del controller.
+- API recibe HTTP, convierte requests en Commands/Queries, traduce Result y registra servicios en `Program.cs`.
 
 Inversión de dependencias significa que Application necesita una abstracción definida por ella, no un repositorio SQL concreto. El contenedor de inyección conecta esa abstracción con la implementación en ejecución. Los servicios scoped de escritura comparten el DbContext de la solicitud; eso permite confirmar recurso y registro idempotente juntos.
 
@@ -44,27 +42,26 @@ CQRS separa las responsabilidades de modificar estado y de obtener información.
 
 Un Command expresa intención: crear equipo, programar partido o registrar resultado. Un Query expresa una lectura: listar partidos o consultar posiciones. Los handlers son clases explícitas; no hay dependencia obligatoria de MediatR ni cola asíncrona.
 
-~~~text
+****
 Escritura: HTTP -> Command handler -> reglas Domain -> EF -> UnitOfWork -> SQL
 Lectura:   HTTP -> Query handler -> contrato de lectura -> Dapper -> SQL -> DTO
-~~~
+****
 
 Los Commands también leen para validar existencia y estado; esas lecturas usan Dapper. La distinción es el propósito del caso de uso, no que un Command tenga prohibido consultar. `Restore` reconstruye escalares persistidos sin emitir eventos de creación; después se aplican métodos de negocio y EF adjunta la escritura.
 
-DTO es una proyección orientada al consumidor, no una entidad de dominio. Por ejemplo, detalle de partido contiene nombres de ambos equipos sin exponer el grafo interno de EF.
 
 ## 5. Entidades, agregados e invariantes
 
 Una entidad tiene identidad estable aunque cambien sus atributos. Una invariante debe conservarse después de cada operación válida. Setters privados y fábricas `Create` evitan que el cliente establezca directamente un estado arbitrario.
 
-`Match` agrupa las reglas entre participantes, goles, marcador y estado. Comienza Scheduled; puede finalizar Played o cancelarse Cancelled. El resultado debe coincidir con goles registrados; no se admiten goles de equipos ajenos ni cambios de participantes cuando ya existen goles. No es un modelo de event sourcing: el estado vive en tablas y los eventos son observación posterior.
+`Match` agrupa las reglas entre participantes, goles, marcador y estado. Comienza Scheduled; puede finalizar Played o cancelarse Cancelled. El resultado debe coincidir con goles registrados; no se admiten goles de equipos ajenos ni cambios de participantes cuando ya existen goles.
 
 Validar en varios niveles cumple responsabilidades diferentes:
 
 1. API valida estructura/tipos del request.
 2. Application valida existencia y unicidad mediante consultas.
 3. Domain valida reglas de las entidades.
-4. SQL Server protege restricciones incluso bajo carreras o escrituras externas.
+4. SQL Server protege restricciones.
 
 Ejemplo: dos solicitudes pueden comprobar simultáneamente que un dorsal está disponible. El índice único `(TeamId, JerseyNumber)` impide confirmar ambos. La validación previa mejora el mensaje, pero no sustituye la restricción.
 
