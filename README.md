@@ -6,10 +6,6 @@ La aplicación permite administrar equipos, jugadores, calendario de partidos, g
 
 ## Documentación de entrega y defensa
 
-- [Manual teórico y aplicado](docs/defensa-tecnica.md): conceptos, implementación, decisiones y preguntas de defensa.
-- [Demostración y casos de uso](docs/guia-demostracion.md): ejemplos HTTP/PowerShell para el sistema.
-- [Rúbrica y cierre de alcance](docs/rubrica-final.md): objetivos implementados y deuda de pruebas aceptada.
-- [Evidencias de QA](docs/qa-final.md): resultados históricos y bloqueo local de Application.
 
 El alcance de desarrollo está preparado para integración desde `Desarrollo` hacia `main`, con QA final pospuesto por decisión del responsable. No se eliminan tests ni se desactiva CI; no se declara una ejecución integral final aprobada.
 
@@ -88,7 +84,6 @@ Durante el entorno de desarrollo, la documentación interactiva de la API puede 
 
 ## Frontend Next.js
 
-Para arrancar y verificar el stack completo de QA con SQL Server real, consulte [procesos de QA](docs/procesos-qa.md): `scripts/Start-Qa.ps1` prepara `.env` local y `scripts/Test-Qa.ps1` ejecuta los controles.
 
 Con la API en ejecución, abra otra terminal y acceda al proyecto frontend:
 
@@ -124,8 +119,7 @@ docker compose --env-file .env.docker ps
 El frontend queda disponible en `http://localhost:3000`, Swagger en
 `http://localhost:5164/swagger` y SQL Server en el puerto local `14330`. Las
 migraciones y los datos iniciales se aplican cuando la API inicia después de que
-SQL Server está saludable. Consulte la [guía Docker](docs/docker.md) para la
-configuración segura, verificación, persistencia y diagnóstico.
+SQL Server está saludable. 
 
 ## Pruebas
 
@@ -143,27 +137,3 @@ La solución incluye pruebas automatizadas para las capas:
 * API
 
 Las operaciones relacionadas con SQL Server y los endpoints HTTP también pueden verificarse manualmente mediante herramientas de administración de SQL Server y Swagger.
-
-## Documentación
-
-La documentación técnica y funcional se encuentra en el directorio `docs`:
-
-* [Reglas de dominio](docs/domain-rules.md)
-* [Persistencia con EF Core y Unit of Work](docs/persistence.md)
-* [Idempotencia HTTP](docs/idempotency.md)
-* [Consultas paginadas](docs/team-queries.md)
-* [REST de equipos](docs/team-rest.md)
-* [REST de jugadores](docs/player-rest.md)
-* [Calendario de partidos](docs/match-scheduling.md)
-* [Goles y resultados](docs/match-results.md)
-* [Posiciones y goleadores](docs/tournament-queries.md)
-* [Datos iniciales FIFA 2026](docs/world-cup-2026-seed.md)
-* [Observabilidad](docs/observability.md)
-* [Frontend Next.js](docs/frontend.md)
-* [Docker y Docker Compose](docs/docker.md)
-* [QA final](docs/qa-final.md)
-
-## Próximos entregables
-
-El repositorio incluye una colección Postman, pruebas de contrato HTTP y un flujo de
-integración continua. La validación final se encuentra en la [guía de QA](docs/qa-final.md).
